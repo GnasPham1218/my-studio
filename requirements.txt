@@ -1,0 +1,15 @@
+jsonschema>=4.22
+faster-whisper>=1.2,<2
+
+# Engine TTS chính: OmniVoice (PyTorch + CUDA).
+# Cài torch theo đúng backend CUDA của máy (xem README), rồi:
+#   uv pip install --python .venv\Scripts\python.exe omnivoice
+# torch và torchaudio cố ý không ghim ở đây để tránh kéo nhầm bản +cpu.
+#   uv pip install --python .venv\Scripts\python.exe --torch-backend=auto `
+#       --reinstall-package torch --reinstall-package torchaudio torch torchaudio
+# torch>=2.8
+# torchaudio>=2.8
+omnivoice>=0.2
+
+# Engine dự phòng (ONNX, không cần torch). Chỉ dùng khi chạy --provider vieneu.
+vieneu>=3.8,<4

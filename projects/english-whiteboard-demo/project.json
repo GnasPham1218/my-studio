@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "projectId": "english-whiteboard-demo",
+  "title": "A or An? Listen to the Sound",
+  "topic": "English articles a/an: the rule is the first sound, not the first letter",
+  "language": "en",
+  "brand": "english-learner-1218",
+  "style": "whiteboard",
+  "defaultFormat": "short",
+  "formats": [
+    "short"
+  ]
+}

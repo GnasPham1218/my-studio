@@ -1,0 +1,62 @@
+{
+  "channel": {
+    "name": "DiveCode1218",
+    "handle": "@DiveCode1218",
+    "tagline": "AI và công nghệ, giải thích dễ hiểu",
+    "language": "vi"
+  },
+  "voice": {
+    "provider": "omnivoice",
+    "omnivoice": {
+      "mode": "clone",
+      "refAudio": "assets/voice/omnivoice-nam.wav",
+      "refText": "Xin chào, đây là kênh DiveCode1218. Hôm nay chúng ta cùng tìm hiểu vì sao các mô hình AI nhỏ đang quay trở lại.",
+      "language": "vi",
+      "speed": 1.0,
+      "numStep": 32
+    }
+  },
+  "audio": {
+    "sampleRate": 48000,
+    "targetDbfs": -18.0,
+    "peakDbfs": -1.0,
+    "leadInSec": 0.15,
+    "tailOutSec": 0.25
+  },
+  "music": {
+    "enabled": false,
+    "track": "assets/music/tech-bed.mp3",
+    "gainDb": -22
+  },
+  "colors": {
+    "bg": "#070B12",
+    "surface": "#101827",
+    "fg": "#F4F7FB",
+    "muted": "#8A97AB",
+    "primary": "#22D3EE",
+    "accent": "#F59E0B"
+  },
+  "fonts": {
+    "display": "Be Vietnam Pro",
+    "body": "Be Vietnam Pro",
+    "mono": "JetBrains Mono"
+  },
+  "logo": {
+    "path": "assets/logo.svg",
+    "wordmark": "DiveCode1218",
+    "opacity": 0.9
+  },
+  "watermark": {
+    "position": "top-right",
+    "heightPx": 44,
+    "marginPx": 40
+  },
+  "cta": {
+    "text": "Theo dõi DiveCode1218 để xem tập tiếp theo",
+    "handle": "@DiveCode1218"
+  },
+  "visuals": {
+    "generated": "procedural",
+    "palette": ["#22D3EE", "#6366F1", "#0EA5E9"]
+  }
+}

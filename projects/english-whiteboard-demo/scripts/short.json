@@ -1,0 +1,257 @@
+{
+  "schemaVersion": 1,
+  "format": "short",
+  "meta": {
+    "projectId": "english-whiteboard-demo",
+    "title": "A or An? Listen to the Sound",
+    "language": "en",
+    "topic": "English articles a/an: the rule is the first sound, not the first letter",
+    "audience": "English learners who mix up a and an",
+    "angle": "Teach one sound rule with a stick teacher and two tricky examples",
+    "sources": [
+      {
+        "title": "Cambridge Dictionary — A/an",
+        "url": "https://dictionary.cambridge.org/grammar/british-grammar/a-an",
+        "accessedAt": "2026-10-21"
+      }
+    ]
+  },
+  "scenes": [
+    {
+      "id": "s01",
+      "type": "hook",
+      "durationTargetSec": 3.2,
+      "narration": "Hôm nay học một mẹo nhỏ. A coffee or an apple?",
+      "onScreenText": "A coffee... or an apple?",
+      "kicker": "English in 30 seconds",
+      "emphasis": [
+        "A",
+        "an"
+      ],
+      "visual": {
+        "kind": "stick",
+        "label": "Which sounds right?",
+        "sub": "a coffee / an apple",
+        "pose": "wave"
+      },
+      "segments": [
+        {
+          "language": "vi",
+          "text": "Hôm nay học một mẹo nhỏ.",
+          "pauseAfterMs": 180
+        },
+        {
+          "language": "en",
+          "text": "A coffee or an apple?"
+        }
+      ]
+    },
+    {
+      "id": "s02",
+      "type": "punch",
+      "durationTargetSec": 3.4,
+      "narration": "Đừng nhìn chữ cái đầu tiên. Listen to the first sound.",
+      "onScreenText": "Listen to the sound",
+      "kicker": "The rule",
+      "emphasis": [
+        "sound"
+      ],
+      "visual": {
+        "kind": "stick",
+        "label": "Sound, not spelling.",
+        "sub": "schwa vs long A",
+        "pose": "point"
+      },
+      "segments": [
+        {
+          "language": "vi",
+          "text": "Đừng nhìn chữ cái đầu tiên.",
+          "pauseAfterMs": 180
+        },
+        {
+          "language": "en",
+          "text": "Listen to the first sound."
+        }
+      ]
+    },
+    {
+      "id": "s03",
+      "type": "punch",
+      "durationTargetSec": 3.2,
+      "narration": "Ví dụ, từ này. A university starts with a Y sound.",
+      "onScreenText": "a university",
+      "kicker": "Tricky pair",
+      "emphasis": [
+        "a",
+        "university"
+      ],
+      "visual": {
+        "kind": "stick",
+        "label": "Starts with /j/.",
+        "sub": "a university",
+        "pose": "write"
+      },
+      "segments": [
+        {
+          "language": "vi",
+          "text": "Ví dụ, từ này.",
+          "pauseAfterMs": 180
+        },
+        {
+          "language": "en",
+          "text": "A university starts with a Y sound."
+        }
+      ]
+    },
+    {
+      "id": "s04",
+      "type": "compare",
+      "durationTargetSec": 3.8,
+      "narration": "Hai từ, hai âm đầu khác nhau. University takes a. Hour takes an.",
+      "onScreenText": "Same letter, different sound",
+      "kicker": "Compare",
+      "compare": {
+        "note": "It is the sound that decides.",
+        "items": [
+          {
+            "label": "university",
+            "value": "a",
+            "ratio": 0.38
+          },
+          {
+            "label": "hour",
+            "value": "an",
+            "ratio": 0.9,
+            "accent": true
+          }
+        ]
+      },
+      "segments": [
+        {
+          "language": "vi",
+          "text": "Hai từ, hai âm đầu khác nhau.",
+          "pauseAfterMs": 180
+        },
+        {
+          "language": "en",
+          "text": "University takes a.",
+          "pauseAfterMs": 250
+        },
+        {
+          "language": "en",
+          "text": "Hour takes an."
+        }
+      ]
+    },
+    {
+      "id": "s05",
+      "type": "punch",
+      "durationTargetSec": 3.5,
+      "narration": "Chữ h ở đây câm. An hour, the first sound is a vowel.",
+      "onScreenText": "an hour",
+      "kicker": "Silent h",
+      "emphasis": [
+        "an",
+        "hour"
+      ],
+      "visual": {
+        "kind": "stick",
+        "label": "The h is silent.",
+        "sub": "an hour",
+        "pose": "point"
+      },
+      "segments": [
+        {
+          "language": "vi",
+          "text": "Chữ h ở đây câm.",
+          "pauseAfterMs": 180
+        },
+        {
+          "language": "en",
+          "text": "An hour, the first sound is a vowel."
+        }
+      ]
+    },
+    {
+      "id": "s06",
+      "type": "list",
+      "durationTargetSec": 3.6,
+      "narration": "Ba mẹo nhanh. Sound first, silent letters, abbreviations.",
+      "onScreenText": "3 quick checks",
+      "kicker": "Checklist",
+      "bullets": [
+        "Sound first: /eɪ/ or /æ/",
+        "Silent h: an hour",
+        "Abbreviations: an MBA"
+      ],
+      "segments": [
+        {
+          "language": "vi",
+          "text": "Ba mẹo nhanh.",
+          "pauseAfterMs": 180
+        },
+        {
+          "language": "en",
+          "text": "Sound first, silent letters, abbreviations."
+        }
+      ]
+    },
+    {
+      "id": "s07",
+      "type": "punch",
+      "durationTargetSec": 3.3,
+      "narration": "Thử từ này. An MBA because M starts with a vowel sound.",
+      "onScreenText": "an MBA",
+      "kicker": "One more",
+      "emphasis": [
+        "an",
+        "MBA"
+      ],
+      "visual": {
+        "kind": "stick",
+        "label": "M says /em/.",
+        "sub": "an MBA",
+        "pose": "cheer"
+      },
+      "segments": [
+        {
+          "language": "vi",
+          "text": "Thử từ này.",
+          "pauseAfterMs": 180
+        },
+        {
+          "language": "en",
+          "text": "An MBA because M starts with a vowel sound."
+        }
+      ]
+    },
+    {
+      "id": "s08",
+      "type": "outro",
+      "durationTargetSec": 3.2,
+      "narration": "Đến lượt bạn. Choose a or an. Follow for one clear rule a day.",
+      "onScreenText": "Your turn!",
+      "kicker": "Practice",
+      "emphasis": [
+        "Your turn"
+      ],
+      "visual": {
+        "kind": "stick",
+        "label": "a or an?",
+        "sub": "Say your answer",
+        "pose": "wave"
+      },
+      "segments": [
+        {
+          "language": "vi",
+          "text": "Đến lượt bạn.",
+          "pauseAfterMs": 180
+        },
+        {
+          "language": "en",
+          "text": "Choose a or an. Follow for one clear rule a day."
+        }
+      ]
+    }
+  ]
+}

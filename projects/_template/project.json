@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "projectId": "ten-du-an",
+  "title": "Tiêu đề video",
+  "topic": "Chủ đề video",
+  "language": "vi",
+  "style": "tech-explainer",
+  "defaultFormat": "short",
+  "formats": [
+    "short"
+  ]
+}

@@ -1,0 +1,278 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://my-studio.local/schemas/script.schema.json",
+  "title": "VideoScript",
+  "description": "Kịch bản video dùng chung cho short 9:16 và long 16:9. Ràng buộc theo format được kiểm tra ở pipeline/validate.py (semantic layer).",
+  "type": "object",
+  "required": ["schemaVersion", "format", "meta", "scenes"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "format": { "enum": ["short", "long"] },
+    "meta": { "$ref": "#/$defs/meta" },
+    "voice": { "$ref": "#/$defs/voice" },
+    "music": { "$ref": "#/$defs/music" },
+    "scenes": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 120,
+      "items": { "$ref": "#/$defs/scene" }
+    },
+    "cta": { "$ref": "#/$defs/cta" }
+  },
+  "$defs": {
+    "meta": {
+      "type": "object",
+      "required": ["projectId", "title", "language", "topic"],
+      "additionalProperties": false,
+      "properties": {
+        "projectId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,60}$" },
+        "title": { "type": "string", "minLength": 3, "maxLength": 120 },
+        "language": { "enum": ["vi", "en"] },
+        "topic": { "type": "string", "minLength": 3, "maxLength": 200 },
+        "audience": { "type": "string", "maxLength": 200 },
+        "angle": { "type": "string", "maxLength": 300 },
+        "sources": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "required": ["title"],
+            "additionalProperties": false,
+            "properties": {
+              "title": { "type": "string", "maxLength": 200 },
+              "url": { "type": "string", "maxLength": 500 },
+              "accessedAt": { "type": "string", "maxLength": 40 }
+            }
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "type": "string", "maxLength": 300 }
+        }
+      }
+    },
+    "voice": {
+      "type": "object",
+      "required": ["provider", "voiceId"],
+      "additionalProperties": false,
+      "properties": {
+        "provider": { "enum": ["vieneu", "omnivoice", "edge-tts", "api"] },
+        "voiceId": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "speed": { "type": "number", "minimum": 0.7, "maximum": 1.3 }
+      }
+    },
+    "music": {
+      "type": "object",
+      "required": ["track"],
+      "additionalProperties": false,
+      "properties": {
+        "track": { "type": "string", "maxLength": 300 },
+        "gainDb": { "type": "number", "minimum": -40, "maximum": 0 }
+      }
+    },
+    "cta": {
+      "type": "object",
+      "required": ["text"],
+      "additionalProperties": false,
+      "properties": {
+        "text": { "type": "string", "maxLength": 120 },
+        "url": { "type": "string", "maxLength": 300 }
+      }
+    },
+    "visual": {
+      "type": "object",
+      "required": ["kind"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "none", "logo", "image", "video", "chart", "screenRecording",
+            "generated", "phone", "award", "loop", "shrink", "decline",
+            "storage", "limits", "question", "stick"
+          ]
+        },
+        "src": { "type": "string", "maxLength": 400 },
+        "prompt": { "type": "string", "maxLength": 600 },
+        "label": { "type": "string", "maxLength": 60 },
+        "sub": { "type": "string", "maxLength": 80 },
+        "pose": { "enum": ["wave", "point", "think", "write", "cheer"] },
+        "credit": { "type": "string", "maxLength": 200 },
+        "fit": { "enum": ["cover", "contain"] },
+        "focus": { "enum": ["center", "top", "bottom", "left", "right"] }
+      }
+    },
+    "chart": {
+      "type": "object",
+      "required": ["data"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string", "maxLength": 80 },
+        "unit": { "type": "string", "maxLength": 20 },
+        "source": { "type": "string", "maxLength": 120 },
+        "data": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "required": ["label", "value"],
+            "additionalProperties": false,
+            "properties": {
+              "label": { "type": "string", "maxLength": 30 },
+              "value": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "stat": {
+      "type": "object",
+      "required": ["value"],
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": "string", "minLength": 1, "maxLength": 20 },
+        "unit": { "type": "string", "maxLength": 20 },
+        "label": { "type": "string", "maxLength": 60 },
+        "note": { "type": "string", "maxLength": 120 }
+      }
+    },
+    "timeline": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "required": ["label", "text"],
+        "additionalProperties": false,
+        "properties": {
+          "label": { "type": "string", "maxLength": 20 },
+          "text": { "type": "string", "maxLength": 80 },
+          "active": { "type": "boolean" }
+        }
+      }
+    },
+    "compare": {
+      "type": "object",
+      "required": ["items"],
+      "additionalProperties": false,
+      "properties": {
+        "unit": { "type": "string", "maxLength": 20 },
+        "note": { "type": "string", "maxLength": 120 },
+        "items": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["label", "value", "ratio"],
+            "additionalProperties": false,
+            "properties": {
+              "label": { "type": "string", "maxLength": 40 },
+              "value": { "type": "string", "maxLength": 30 },
+              "ratio": { "type": "number", "minimum": 0, "maximum": 1 },
+              "accent": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "scene": {
+      "type": "object",
+      "required": ["id", "type", "narration"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^s[0-9]{2,3}$" },
+        "type": {
+          "enum": [
+            "hook", "stat", "punch", "captionStack",
+            "title", "chapter", "bullets", "list", "quote", "imageFull",
+            "chart", "lowerThird", "recap", "outro", "timeline", "compare"
+          ]
+        },
+        "durationTargetSec": { "type": "number", "minimum": 1, "maximum": 30 },
+        "narration": { "type": "string", "minLength": 1, "maxLength": 600 },
+        "onScreenText": { "type": "string", "maxLength": 120 },
+        "kicker": { "type": "string", "maxLength": 40 },
+        "bullets": {
+          "type": "array",
+          "maxItems": 5,
+          "items": { "type": "string", "maxLength": 80 }
+        },
+        "emphasis": {
+          "type": "array",
+          "maxItems": 6,
+          "items": { "type": "string", "maxLength": 40 }
+        },
+        "claims": {
+          "type": "array",
+          "maxItems": 6,
+          "description": "Khẳng định kiểm chứng được trong scene (số liệu, năm, tên nghiên cứu), kèm nguồn.",
+          "items": {
+            "type": "object",
+            "required": ["text", "source"],
+            "additionalProperties": false,
+            "properties": {
+              "text": { "type": "string", "minLength": 3, "maxLength": 200 },
+              "source": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Số thứ tự (bắt đầu từ 1) trong meta.sources."
+              }
+            }
+          }
+        },
+        "visual": { "$ref": "#/$defs/visual" },
+        "chart": { "$ref": "#/$defs/chart" },
+        "stat": { "$ref": "#/$defs/stat" },
+        "timeline": { "$ref": "#/$defs/timeline" },
+        "compare": { "$ref": "#/$defs/compare" },
+        "language": {
+          "enum": ["vi", "en"],
+          "description": "Ngôn ngữ đọc của cả scene khi không tách segments."
+        },
+        "segments": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "description": "Tách narration theo ngôn ngữ để mỗi đoạn dùng đúng giọng.",
+          "items": {
+            "type": "object",
+            "required": ["language", "text"],
+            "additionalProperties": false,
+            "properties": {
+              "language": { "enum": ["vi", "en"] },
+              "text": { "type": "string", "minLength": 1, "maxLength": 300 },
+              "pauseAfterMs": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 2000,
+                "description": "Khoảng lặng sau đoạn, tính bằng ms."
+              }
+            }
+          }
+        },
+        "transition": { "enum": ["cut", "fade", "slide", "wipe"] },
+        "sfx": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z][a-z0-9-]{1,31}$",
+          "description": "ID trong config/sfx.json; null = không có SFX."
+        },
+        "sfxAtSec": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 30,
+          "description": "Thời điểm đặt SFX, tính từ đầu scene (giây)."
+        },
+        "sfxVolume": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Ghi đè âm lượng mặc định của SFX."
+        },
+        "notes": { "type": "string", "maxLength": 300 }
+      }
+    }
+  }
+}

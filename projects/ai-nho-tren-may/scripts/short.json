@@ -1,0 +1,316 @@
+{
+  "schemaVersion": 1,
+  "format": "short",
+  "meta": {
+    "projectId": "ai-nho-tren-may",
+    "title": "Vì sao AI đang quay về máy của bạn",
+    "language": "vi",
+    "topic": "Small language models và AI on-device: vì sao AI quay về máy và giới hạn thật sự",
+    "audience": "Người dùng công nghệ Việt Nam quan tâm tới AI, smartphone và laptop AI",
+    "angle": "Lịch sử lặp lại: AI đã chạy trên máy từ 2018, bị cloud hóa, rồi quay lại dưới dạng SLM",
+    "sources": [
+      {
+        "title": "Small language models: 10 Breakthrough Technologies 2025 — MIT Technology Review",
+        "url": "https://www.technologyreview.com/2025/01/03/1108800/small-language-models-ai-breakthrough-technologies-2025",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Why small language models are on the rise — TechTarget",
+        "url": "https://www.techtarget.com/ai/tip/Why-small-language-models-are-on-the-rise",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Demystifying Small Language Models for Edge Deployment — ACL 2025",
+        "url": "https://aclanthology.org/2025.acl-long.718.pdf",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "On-Device Language Models: A Comprehensive Review — arXiv 2409.00088",
+        "url": "https://arxiv.org/html/2409.00088v1",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Apple Intelligence Foundation Language Models: Tech Report 2025 — arXiv 2507.13575",
+        "url": "https://arxiv.org/abs/2507.13575",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Gemma 3n model overview — Google AI for Developers",
+        "url": "https://ai.google.dev/gemma/docs/gemma-3n",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Copilot+ PCs developer guide — Microsoft Learn",
+        "url": "https://learn.microsoft.com/en-us/windows/ai/npu-devices/",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Optimizing LLMs Using Quantization For Mobile Execution — arXiv 2512.06490",
+        "url": "https://arxiv.org/html/2512.06490v1",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "The AI Shadow War: SaaS vs. Edge Computing Architectures — arXiv 2507.11545",
+        "url": "https://arxiv.org/html/2507.11545v1",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Towards a tailored approach for privacy, trustworthiness in Edge AI — IAPP",
+        "url": "https://www.iapp.org/news/a/towards-a-tailored-approach-for-privacy-trustworthiness-in-edge-ai",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "When AI Benchmarks Plateau: A Systematic Study of Benchmark Saturation — arXiv 2602.16763",
+        "url": "https://arxiv.org/abs/2602.16763",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Apple's real AI story: a 20-billion-parameter model that runs from flash — TheNextWeb",
+        "url": "https://thenextweb.com/news/apple-third-generation-foundation-models-afm",
+        "accessedAt": "2026-10-20"
+      }
+    ],
+    "assumptions": [
+      "Số liệu latency (cloud 100-500ms so với cục bộ dưới 10-20ms) đến từ preprint arXiv 2507.11545, mang tính ước lượng tổng hợp."
+    ]
+  },
+  "scenes": [
+    {
+      "id": "s01",
+      "type": "hook",
+      "durationTargetSec": 3.4,
+      "narration": "Mười năm trước điện thoại đã chạy AI. Giờ nó đang quay lại.",
+      "onScreenText": "Câu chuyện bắt đầu từ 2018",
+      "emphasis": [
+        "2018"
+      ],
+      "visual": {
+        "kind": "phone",
+        "label": "2018",
+        "sub": "AI on-device"
+      },
+      "transition": "fade",
+      "kicker": "AI trên máy"
+    },
+    {
+      "id": "s02",
+      "type": "punch",
+      "durationTargetSec": 3.2,
+      "narration": "MIT chọn small language models là công nghệ đột phá năm 2025.",
+      "onScreenText": "Đột phá của năm 2025",
+      "kicker": "MIT Technology Review",
+      "emphasis": [
+        "2025"
+      ],
+      "visual": {
+        "kind": "award",
+        "label": "2025"
+      }
+    },
+    {
+      "id": "s03",
+      "type": "punch",
+      "durationTargetSec": 3.4,
+      "narration": "Điều ít ai nhắc: AI chạy trên máy không phải phát minh mới.",
+      "onScreenText": "Không có gì mới",
+      "emphasis": [
+        "không"
+      ],
+      "kicker": "Góc nhìn",
+      "visual": {
+        "kind": "loop"
+      }
+    },
+    {
+      "id": "s04",
+      "type": "punch",
+      "durationTargetSec": 2.9,
+      "narration": "Năm 2019 và 2020, DistilBERT rồi MobileBERT đã chạy ngay trên điện thoại.",
+      "onScreenText": "Nén mô hình xuống điện thoại",
+      "emphasis": [
+        "Nén"
+      ],
+      "kicker": "2019 – 2020",
+      "visual": {
+        "kind": "shrink"
+      }
+    },
+    {
+      "id": "s05",
+      "type": "timeline",
+      "durationTargetSec": 3.7,
+      "narration": "Rồi cuộc đua mô hình lớn nổ ra, mọi thứ chuyển lên đám mây.",
+      "onScreenText": "Cloud AI bùng nổ",
+      "emphasis": [
+        "cloud",
+        "LLM"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ trục thời gian: làn sóng mô hình on-device 2018-2020 giảm xuống, làn sóng LLM cloud 2020-2023 tăng vọt"
+      },
+      "kicker": "Dòng thời gian",
+      "timeline": [
+        {
+          "label": "2018",
+          "text": "AI chạy trên điện thoại"
+        },
+        {
+          "label": "2019–20",
+          "text": "Nén mô hình"
+        },
+        {
+          "label": "2020–23",
+          "text": "Cuộc đua cloud AI",
+          "active": true
+        },
+        {
+          "label": "2024–25",
+          "text": "SLM quay lại máy"
+        }
+      ]
+    },
+    {
+      "id": "s06",
+      "type": "punch",
+      "durationTargetSec": 3.4,
+      "narration": "Nhưng lợi nhuận mô hình lớn đã chững lại. Làn sóng đảo chiều.",
+      "onScreenText": "Làn sóng đảo chiều",
+      "emphasis": [
+        "đảo chiều"
+      ],
+      "visual": {
+        "kind": "decline",
+        "label": "2023"
+      },
+      "kicker": "2023"
+    },
+    {
+      "id": "s07",
+      "type": "stat",
+      "durationTargetSec": 2.9,
+      "narration": "Quantization 4-bit làm mô hình nhẹ đi gần 69% dung lượng.",
+      "onScreenText": "69% dung lượng",
+      "kicker": "Quantization 4-bit",
+      "emphasis": [
+        "69%"
+      ],
+      "visual": {
+        "kind": "storage",
+        "label": "4-bit"
+      },
+      "sfx": "tick",
+      "sfxAtSec": 0.1,
+      "stat": {
+        "value": "69",
+        "unit": "%",
+        "label": "dung lượng giảm",
+        "note": "Llama 3.2 3B · nén 4-bit"
+      }
+    },
+    {
+      "id": "s08",
+      "type": "punch",
+      "durationTargetSec": 3.4,
+      "narration": "Nhờ thế, Llama 3.2 bản 3 tỷ chạy được trên điện thoại Android.",
+      "onScreenText": "Llama 3.2 · 3B",
+      "emphasis": [
+        "3B"
+      ],
+      "kicker": "Android",
+      "visual": {
+        "kind": "phone",
+        "label": "3B",
+        "sub": "Android · 4-bit"
+      }
+    },
+    {
+      "id": "s09",
+      "type": "list",
+      "durationTargetSec": 3.4,
+      "narration": "Phần cứng đã đủ: chuẩn Copilot+ PC đòi NPU tối thiểu 40 TOPS.",
+      "onScreenText": "Phần cứng tối thiểu",
+      "bullets": [
+        "NPU ≥ 40 TOPS",
+        "RAM ≥ 16 GB",
+        "SSD ≥ 256 GB"
+      ],
+      "emphasis": [],
+      "kicker": "Copilot+ PC"
+    },
+    {
+      "id": "s10",
+      "type": "compare",
+      "durationTargetSec": 3.7,
+      "narration": "Hỏi đám mây mất tới 500 mili giây, xử lý cục bộ dưới 20.",
+      "onScreenText": "Cloud và trên máy",
+      "emphasis": [
+        "cục bộ"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ thanh ngang so sánh độ trễ: đám mây 100-500 mili giây, xử lý cục bộ dưới 10-20 mili giây"
+      },
+      "kicker": "Độ trễ",
+      "compare": {
+        "unit": "ms",
+        "note": "nhanh hơn khoảng 25 lần",
+        "items": [
+          {
+            "label": "Cloud",
+            "value": "100–500 ms",
+            "ratio": 1.0
+          },
+          {
+            "label": "Trên máy",
+            "value": "< 20 ms",
+            "ratio": 0.05,
+            "accent": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "s11",
+      "type": "punch",
+      "durationTargetSec": 3.4,
+      "narration": "Mô hình nhỏ vẫn yếu ở suy luận phức tạp và context dài.",
+      "onScreenText": "Chưa thay được cloud",
+      "emphasis": [
+        "giới hạn"
+      ],
+      "kicker": "Giới hạn",
+      "visual": {
+        "kind": "limits"
+      }
+    },
+    {
+      "id": "s12",
+      "type": "punch",
+      "durationTargetSec": 3.7,
+      "narration": "Câu hỏi không phải máy hay cloud thắng. Việc gì nên chạy trên máy?",
+      "onScreenText": "Máy hay cloud?",
+      "emphasis": [
+        "Máy"
+      ],
+      "kicker": "Câu hỏi cuối",
+      "visual": {
+        "kind": "question"
+      }
+    },
+    {
+      "id": "s13",
+      "type": "outro",
+      "durationTargetSec": 3.7,
+      "narration": "Bạn đang dùng tính năng AI on-device nào? Comment và đăng ký kênh nhé.",
+      "onScreenText": "Comment · Đăng ký kênh",
+      "emphasis": [
+        "đăng ký"
+      ],
+      "kicker": "Hẹn gặp lại"
+    }
+  ],
+  "cta": {
+    "text": "Comment trải nghiệm AI on-device của bạn và đăng ký kênh để xem tiếp series AI trên thiết bị"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "channel": {
+    "name": "EnglishLearner1218",
+    "handle": "@EnglishLearner1218",
+    "tagline": "Learn English one clear rule at a time",
+    "language": "en"
+  },
+  "voice": {
+    "provider": "omnivoice",
+    "omnivoice": {
+      "mode": "clone",
+      "language": "en",
+      "speed": 1.0,
+      "numStep": 32,
+      "refAudio": "assets/voice/omnivoice-englishlearner.wav",
+      "refText": "Hello, welcome to EnglishLearner1218. Today we will learn one small rule that makes your English sound more natural."
+    }
+  },
+  "voices": {
+    "vi": {
+      "provider": "vieneu",
+      "vieneu": {
+        "voiceId": "Mai Anh",
+        "language": "vi"
+      }
+    }
+  },
+  "audio": {
+    "sampleRate": 48000,
+    "targetDbfs": -18.0,
+    "peakDbfs": -1.0,
+    "leadInSec": 0.15,
+    "tailOutSec": 0.25
+  },
+  "music": {
+    "enabled": false,
+    "track": "",
+    "gainDb": -22
+  },
+  "colors": {
+    "bg": "#F7F7F4",
+    "surface": "#FFFFFF",
+    "fg": "#2B2B2B",
+    "muted": "#6E6E66",
+    "primary": "#3F7C9A",
+    "accent": "#C97B7B"
+  },
+  "fonts": {
+    "display": "Patrick Hand",
+    "body": "Be Vietnam Pro",
+    "mono": "JetBrains Mono"
+  },
+  "logo": {
+    "path": "",
+    "wordmark": "EnglishLearner1218",
+    "opacity": 0.9
+  },
+  "watermark": {
+    "position": "top-right",
+    "heightPx": 44,
+    "marginPx": 40
+  },
+  "cta": {
+    "text": "Follow EnglishLearner1218 for one clear rule a day",
+    "handle": "@EnglishLearner1218"
+  },
+  "visuals": {
+    "generated": "procedural",
+    "palette": [
+      "#3F7C9A",
+      "#C97B7B",
+      "#7A9E7E"
+    ]
+  }
+}

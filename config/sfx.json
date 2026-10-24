@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "policy": {
+    "default": "none",
+    "maxPerScene": 1,
+    "minGapSec": 1.2,
+    "peakBelowVoiceDb": 8,
+    "banned": ["whoosh"],
+    "note": "Chỉ dùng SFX khi có điểm nhấn thị giác rõ. Không đặt ở mọi lần cắt cảnh, không dùng whoosh."
+  },
+  "items": {
+    "tick": {
+      "file": "tick.wav",
+      "durationSec": 0.12,
+      "peakSec": 0.0,
+      "defaultVolume": 0.4,
+      "useFor": [
+        "số liệu đếm xong và chốt giá trị",
+        "một item/vật thể vừa khớp vào đúng vị trí",
+        "xác nhận một lựa chọn hoặc kết quả"
+      ],
+      "avoidFor": [
+        "chuyển cảnh",
+        "mỗi dòng trong list",
+        "lúc đang có nhiều lời thoại dày"
+      ]
+    }
+  }
+}

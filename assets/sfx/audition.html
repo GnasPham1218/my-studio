@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Audition SFX · DiveCode1218</title>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0; padding: 32px 20px 64px;
+      background: #0b1020; color: #e8ecf8;
+      font: 15px/1.5 "Segoe UI", system-ui, sans-serif;
+    }
+    main { max-width: 760px; margin: 0 auto; }
+    h1 { font-size: 24px; margin: 0 0 4px; }
+    p.lead { color: #9aa6c4; margin: 0 0 28px; }
+    h2 { font-size: 13px; letter-spacing: .12em; text-transform: uppercase;
+         color: #7c8bb0; margin: 32px 0 10px; }
+    .item { background: #121a33; border: 1px solid #1f2a4a; border-radius: 12px;
+            padding: 12px 14px; margin-bottom: 10px; }
+    .item.final { border-color: #3b82f6; background: #13203f; }
+    .name { display: flex; justify-content: space-between; gap: 12px;
+            margin-bottom: 8px; font-weight: 600; }
+    .tag { font-size: 11px; font-weight: 600; color: #93c5fd;
+           border: 1px solid #2563eb; border-radius: 999px; padding: 1px 8px; }
+    .meta { color: #8b98b8; font-size: 12.5px; margin-bottom: 8px; }
+    audio { width: 100%; height: 36px; }
+    a { color: #93c5fd; }
+    code { background: #18213a; padding: 1px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Audition SFX</h1>
+  <p class="lead">Nghe thử tick thật tải từ Mixkit và các ứng viên click. Whoosh
+  đã bỏ vì không hợp với nhịp video.</p>
+
+  <h2>Đang dùng</h2>
+  <div class="item final">
+    <div class="name"><span>Tick — Cool interface click tone</span><span class="tag">final</span></div>
+    <div class="meta">Mixkit #2568 · đã cắt 0,12 s · 48 kHz · đỉnh −5 dBFS · volume 0,40</div>
+    <audio controls preload="none" src="tick.wav"></audio>
+  </div>
+
+  <h2>Click khác</h2>
+  <div class="item">
+    <div class="name"><span>Positive interface beep</span><span class="tag">#221</span></div>
+    <div class="meta">0,56 s · beep hai nốt, dễ bị "game" quá</div>
+    <audio controls preload="none" src="candidates/221-positive-interface-beep.wav"></audio>
+  </div>
+  <div class="item">
+    <div class="name"><span>Cool interface click tone (bản gốc)</span><span class="tag">#2568</span></div>
+    <div class="meta">0,20 s · bản gốc trước khi cắt/fade</div>
+    <audio controls preload="none" src="candidates/2568-cool-interface-click-tone.wav"></audio>
+  </div>
+  <div class="item">
+    <div class="name"><span>Interface device click</span><span class="tag">#2577</span></div>
+    <div class="meta">1,0 s · click bén, có đuôi, hợp UI</div>
+    <audio controls preload="none" src="candidates/2577-interface-device-click.wav"></audio>
+  </div>
+  <div class="item">
+    <div class="name"><span>Modern technology select</span><span class="tag">#3124</span></div>
+    <div class="meta">0,5 s · click rất ngắn, khá nhỏ</div>
+    <audio controls preload="none" src="candidates/3124-modern-technology-select.wav"></audio>
+  </div>
+
+  <h2>Ghi chú</h2>
+  <p class="meta">Nguồn và giấy phép: <a href="SOURCES.md">SOURCES.md</a> ·
+  Mixkit Sound Effects Free License, dùng thương mại miễn phí, không bắt buộc
+  ghi công. Danh mục SFX: <code>config/sfx.json</code>.</p>
+</main>
+</body>
+</html>

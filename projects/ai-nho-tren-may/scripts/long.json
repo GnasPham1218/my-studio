@@ -1,0 +1,774 @@
+{
+  "schemaVersion": 1,
+  "format": "long",
+  "meta": {
+    "projectId": "ai-nho-tren-may",
+    "title": "Vì sao AI trên máy đang trở lại",
+    "language": "vi",
+    "topic": "Small language models và AI on-device: lịch sử, kỹ thuật nén, phần cứng và giới hạn thật sự",
+    "audience": "Người dùng công nghệ Việt Nam quan tâm tới AI, smartphone và laptop AI",
+    "angle": "Lịch sử lặp lại: AI đã chạy trên máy từ 2018, bị cloud hóa, rồi quay lại dưới dạng SLM — và vì sao cloud chưa bị thay thế",
+    "sources": [
+      {
+        "title": "Small language models: 10 Breakthrough Technologies 2025 — MIT Technology Review",
+        "url": "https://www.technologyreview.com/2025/01/03/1108800/small-language-models-ai-breakthrough-technologies-2025",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Why small language models are on the rise — TechTarget",
+        "url": "https://www.techtarget.com/ai/tip/Why-small-language-models-are-on-the-rise",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Demystifying Small Language Models for Edge Deployment — ACL 2025",
+        "url": "https://aclanthology.org/2025.acl-long.718.pdf",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "On-Device Language Models: A Comprehensive Review — arXiv 2409.00088",
+        "url": "https://arxiv.org/html/2409.00088v1",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Apple Intelligence Foundation Language Models: Tech Report 2025 — arXiv 2507.13575",
+        "url": "https://arxiv.org/abs/2507.13575",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Gemma 3n model overview — Google AI for Developers",
+        "url": "https://ai.google.dev/gemma/docs/gemma-3n",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Copilot+ PCs developer guide — Microsoft Learn",
+        "url": "https://learn.microsoft.com/en-us/windows/ai/npu-devices/",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Optimizing LLMs Using Quantization For Mobile Execution — arXiv 2512.06490",
+        "url": "https://arxiv.org/html/2512.06490v1",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "The AI Shadow War: SaaS vs. Edge Computing Architectures — arXiv 2507.11545",
+        "url": "https://arxiv.org/html/2507.11545v1",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Towards a tailored approach for privacy, trustworthiness in Edge AI — IAPP",
+        "url": "https://www.iapp.org/news/a/towards-a-tailored-approach-for-privacy-trustworthiness-in-edge-ai",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "When AI Benchmarks Plateau: A Systematic Study of Benchmark Saturation — arXiv 2602.16763",
+        "url": "https://arxiv.org/abs/2602.16763",
+        "accessedAt": "2026-10-20"
+      },
+      {
+        "title": "Apple's real AI story: a 20-billion-parameter model that runs from flash — TheNextWeb",
+        "url": "https://thenextweb.com/news/apple-third-generation-foundation-models-afm",
+        "accessedAt": "2026-10-20"
+      }
+    ],
+    "assumptions": [
+      "Số liệu latency (cloud 100-500ms so với cục bộ dưới 10-20ms) đến từ preprint arXiv 2507.11545, mang tính ước lượng tổng hợp.",
+      "Quy mô thị trường edge AI trích theo Market.us dẫn lại trong arXiv 2409.00088; nguồn khác ước tính khác hẳn nên chỉ trích một nguồn.",
+      "Nội dung thế hệ AFM 3 và Siri dùng Gemini dựa vào tin báo chí 2026, chưa có tech report đầy đủ."
+    ]
+  },
+  "scenes": [
+    {
+      "id": "s01",
+      "type": "title",
+      "durationTargetSec": 11,
+      "narration": "Mười năm trước, điện thoại đã chạy AI. Rồi mọi thứ chuyển lên đám mây. Giờ xu thế đó đang đảo chiều. Đây là câu chuyện vì sao AI quay về máy của bạn, và đâu là giới hạn thật sự.",
+      "onScreenText": "AI quay về máy của bạn",
+      "emphasis": [
+        "AI on-device",
+        "trở lại"
+      ],
+      "visual": {
+        "kind": "generated",
+        "prompt": "Nền tối xanh dương đậm với các hạt ánh sáng nhỏ di chuyển dọc theo mạng lưới, cảm giác công nghệ và dữ liệu, phong cách tối giản, không chữ"
+      },
+      "transition": "fade"
+    },
+    {
+      "id": "s02",
+      "type": "stat",
+      "durationTargetSec": 9,
+      "narration": "MIT Technology Review xếp small language models vào danh sách mười công nghệ đột phá năm hai nghìn hai trăm hai mươi lăm. Đây không phải marketing, mà là đánh giá của giới nghiên cứu.",
+      "onScreenText": "10 Breakthrough Technologies 2025 — MIT Tech Review",
+      "kicker": "Bằng chứng",
+      "emphasis": [
+        "SLM",
+        "breakthrough"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Danh sách mười công nghệ đột phá 2025 dạng thẻ đánh số, nổi bật thẻ Small language models bằng màu sáng, nền tối tối giản"
+      }
+    },
+    {
+      "id": "s03",
+      "type": "imageFull",
+      "durationTargetSec": 7,
+      "narration": "Nhưng điều đầu tiên cần biết: AI chạy trên máy không phải phát minh mới. Nó đã tồn tại từ năm hai nghìn lẻ mười tám.",
+      "onScreenText": "2018: AI đã chạy trên điện thoại",
+      "emphasis": [
+        "2018",
+        "không mới"
+      ]
+    },
+    {
+      "id": "s04",
+      "type": "bullets",
+      "durationTargetSec": 7,
+      "narration": "Trong video này, tôi sẽ đi qua bốn thứ: lịch sử, cách nén mô hình, phần cứng, và cuối cùng là giới hạn.",
+      "bullets": [
+        "Lịch sử lặp lại",
+        "Bí thuật nén mô hình",
+        "Phần cứng đã đủ mạnh",
+        "Giới hạn thật"
+      ],
+      "emphasis": [
+        "lộ trình",
+        "bốn phần"
+      ]
+    },
+    {
+      "id": "s05",
+      "type": "chapter",
+      "durationTargetSec": 6,
+      "narration": "Chương một. Lịch sử lặp lại.",
+      "onScreenText": "Chương 1 — Lịch sử lặp lại",
+      "kicker": "Chương 1",
+      "emphasis": [
+        "lịch sử"
+      ]
+    },
+    {
+      "id": "s06",
+      "type": "bullets",
+      "durationTargetSec": 8,
+      "narration": "Năm hai nghìn không trăm mười chín, DistilBERT và TinyBERT ra đời. Năm hai nghìn hai mươi, đến lượt MobileBERT. Mô hình nhỏ, chạy ngay trên điện thoại, làm tốt một việc cụ thể.",
+      "bullets": [
+        "2019: DistilBERT, TinyBERT",
+        "2020: MobileBERT",
+        "Chạy ngay trên điện thoại"
+      ],
+      "emphasis": [
+        "DistilBERT",
+        "MobileBERT"
+      ]
+    },
+    {
+      "id": "s07",
+      "type": "chart",
+      "durationTargetSec": 7,
+      "narration": "Nhưng rồi cuộc đua mô hình lớn nổ ra. GPT ba, rồi GPT bốn. Cả thế giới chuyển AI lên đám mây.",
+      "onScreenText": "2020–2023: kỷ nguyên cloud AI",
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ trục thời gian: làn sóng mô hình on-device 2018-2020 giảm xuống, làn sóng LLM cloud 2020-2023 tăng vọt"
+      },
+      "emphasis": [
+        "cloud",
+        "scale"
+      ]
+    },
+    {
+      "id": "s08",
+      "type": "stat",
+      "durationTargetSec": 7,
+      "narration": "Trích phát biểu của Noam Brown từ OpenAI tại TEDAI năm hai nghìn hai trăm hai mươi bốn: quy mô là tất cả.",
+      "onScreenText": "\"Scale is everything\" — TEDAI 2024",
+      "kicker": "Giai đoạn cloud",
+      "emphasis": [
+        "scale"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ trục thời gian 2020-2024 với các mốc mô hình lớn dần, trọng lượng dịch chuyển hẳn về phía data center, tông xanh đậm"
+      }
+    },
+    {
+      "id": "s09",
+      "type": "stat",
+      "durationTargetSec": 6,
+      "narration": "Khi mọi thứ dồn về data center, mỗi câu hỏi của bạn đều phải đi một vòng lên đám mây rồi mới trả lời về.",
+      "onScreenText": "Mọi câu hỏi đi một vòng qua cloud",
+      "emphasis": [
+        "data center",
+        "đám mây"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Sơ đồ luồng vòng: người dùng → đám mây → người dùng, so sánh với đường thẳng nội bộ chỉ một bước, phong cách diagram tối giản"
+      }
+    },
+    {
+      "id": "s10",
+      "type": "imageFull",
+      "durationTargetSec": 7,
+      "narration": "Từ hai nghìn lẻ hai mươi đến hai nghìn hai mươi ba, mọi nguồn lực dồn vào data center. Điện thoại của bạn chỉ còn là cửa ngõ.",
+      "onScreenText": "Điện thoại = cửa ngõ tới cloud",
+      "emphasis": [
+        "data center",
+        "cửa ngõ"
+      ],
+      "visual": {
+        "kind": "generated",
+        "prompt": "Minh họa tối giản: đường dữ liệu sáng chạy từ một chiếc điện thoại nhỏ lên đám mây lớn ở trên cao, tông xanh lam và đen"
+      }
+    },
+    {
+      "id": "s11",
+      "type": "lowerThird",
+      "durationTargetSec": 7,
+      "narration": "Nhưng ba năm sau, lợi nhuận biên từ việc làm mô hình lớn hơn chững lại. Và làn sóng quay về thiết bị bắt đầu.",
+      "onScreenText": "Đường cong lợi nhuận biên chững lại",
+      "emphasis": [
+        "đảo chiều",
+        "on-device"
+      ],
+      "visual": {
+        "kind": "generated",
+        "prompt": "Đường cong cong trượt dần rồi đổi hướng đi lên, phong cách biểu đồ trừu tượng trên nền tối, ánh sáng xanh"
+      }
+    },
+    {
+      "id": "s12",
+      "type": "chapter",
+      "durationTargetSec": 6,
+      "narration": "Chương hai. Small language models: xu hướng thật, không phải phong trào.",
+      "onScreenText": "Chương 2 — Xu hướng thật",
+      "kicker": "Chương 2",
+      "emphasis": [
+        "SLM"
+      ]
+    },
+    {
+      "id": "s13",
+      "type": "stat",
+      "durationTargetSec": 8,
+      "narration": "TechTarget định nghĩa SLM là mô hình dưới khoảng ba mươi tỷ tham số, huấn luyện trên dữ liệu được chọn lọc thay vì scrape cả internet.",
+      "onScreenText": "SLM: dưới ~30 tỷ tham số",
+      "kicker": "Định nghĩa",
+      "emphasis": [
+        "dưới 30B",
+        "curated data"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ thanh ngang thang số tham số: vùng mô hình nhỏ 100 triệu đến 30 tỷ, mốc 5 tỷ được đánh dấu, mô hình lớn hàng trăm tỷ nằm ngoài vùng, tông xanh và xám"
+      }
+    },
+    {
+      "id": "s14",
+      "type": "bullets",
+      "durationTargetSec": 7,
+      "narration": "Dữ liệu chọn lọc thay vì thu thập cả internet. Mục tiêu hẹp hơn, chi phí thấp hơn, và với tác vụ cụ thể, chất lượng có thể tốt hơn.",
+      "bullets": [
+        "Dữ liệu curated",
+        "Mục tiêu hẹp hơn",
+        "Tốt cho tác vụ cụ thể"
+      ],
+      "emphasis": [
+        "curated",
+        "tác vụ hẹp"
+      ]
+    },
+    {
+      "id": "s15",
+      "type": "chart",
+      "durationTargetSec": 8,
+      "narration": "Nghiên cứu ACL năm hai nghìn hai trăm hai mươi năm rà soát sáu mươi tám mô hình nhỏ. Điểm benchmark của chúng tăng mười hai phẩy năm phần trăm chỉ trong mười tám tháng.",
+      "onScreenText": "68 SLM: điểm benchmark +12,5% (3/2023–9/2024)",
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ cột so sánh: SLM +12,5% và LLaMA-7B +7,5% từ tháng 3 năm 2023 đến tháng 9 năm 2024"
+      },
+      "emphasis": [
+        "+12,5%",
+        "ACL 2025"
+      ]
+    },
+    {
+      "id": "s16",
+      "type": "stat",
+      "durationTargetSec": 6,
+      "narration": "Cùng kỳ, series LLaMA bảy tỷ chỉ tăng bảy phẩy năm phần trăm. Mô hình nhỏ đang tiến nhanh hơn.",
+      "onScreenText": "SLM +12,5% vs LLaMA-7B +7,5%",
+      "emphasis": [
+        "nhanh hơn"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ cột so sánh hai mức tăng: SLM 12,5% cao hơn LLaMA-7B 7,5%, kỳ ölç từ tháng 3 năm 2023 đến tháng 9 năm 2024"
+      }
+    },
+    {
+      "id": "s17",
+      "type": "stat",
+      "durationTargetSec": 7,
+      "narration": "Ví dụ: Phi ba mini, ba phẩy tám tỷ tham số, đạt sáu mươi chín phần trăm MMLU, ngang ngửa GPT ba chấm năm.",
+      "onScreenText": "Phi-3-mini 3,8B → 69% MMLU",
+      "kicker": "Số liệu",
+      "emphasis": [
+        "Phi-3-mini",
+        "69% MMLU"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ cột MMLU: Phi-3-mini nổi bật ở 69%, các cột mô hình cùng nhóm ngang bằng bên cạnh, nền tối, số liệu chỉ ghi cho Phi-3-mini"
+      }
+    },
+    {
+      "id": "s18",
+      "type": "imageFull",
+      "durationTargetSec": 7,
+      "narration": "Nhưng lưu ý: những benchmark mà mô hình nhỏ ngang ngửa thường là tác vụ hẹp, như tóm tắt, trích xuất hay tổng hợp.",
+      "onScreenText": "Ngang ngửa ở tác vụ hẹp",
+      "emphasis": [
+        "tác vụ hẹp",
+        "cảnh báo"
+      ],
+      "visual": {
+        "kind": "generated",
+        "prompt": "Minh họa bàn cờ nhiệm vụ AI: vài ô nhỏ sáng lên (tóm tắt, dịch, trích xuất), một ô lớn mờ tối ở xa, phong cách phẳng"
+      }
+    },
+    {
+      "id": "s19",
+      "type": "chapter",
+      "durationTargetSec": 6,
+      "narration": "Chương ba. Bí thuật nén, thứ khiến làn sóng này khác biệt.",
+      "onScreenText": "Chương 3 — Bí thuật nén",
+      "kicker": "Chương 3",
+      "emphasis": [
+        "nén mô hình"
+      ]
+    },
+    {
+      "id": "s20",
+      "type": "bullets",
+      "durationTargetSec": 8,
+      "narration": "Ba biện pháp chính. Quantization: làm tròn trọng số cho nhẹ. Knowledge distillation: học từ mô hình thầy. Kiến trúc sparse: chỉ đánh thức phần cần dùng.",
+      "bullets": [
+        "Quantization",
+        "Knowledge distillation",
+        "Kiến trúc sparse"
+      ],
+      "emphasis": [
+        "quantization",
+        "distillation"
+      ]
+    },
+    {
+      "id": "s21",
+      "type": "stat",
+      "durationTargetSec": 8,
+      "narration": "Quantization bốn bit giảm dung lượng mô hình gần sáu mươi chín phần trăm. Nhờ thế, Llama ba chấm hai bản ba tỷ chạy được trên điện thoại Android phổ thông.",
+      "onScreenText": "4-bit: dung lượng giảm ~68,66%",
+      "kicker": "Quantization",
+      "emphasis": [
+        "4-bit",
+        "-68,66%"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ cột dung lượng Llama 3.2 3B trước và sau quantization 4-bit, cột sau thấp hơn 68,66%, nhãn ghi phần trăm giảm"
+      }
+    },
+    {
+      "id": "s22",
+      "type": "bullets",
+      "durationTargetSec": 7,
+      "narration": "Knowledge distillation: mô hình nhỏ học cách trả lời của mô hình thầy lớn. Kết quả gần bằng, còn kích thước thì nhỏ hơn nhiều.",
+      "bullets": [
+        "Mô hình thầy dạy",
+        "Mô hình con học",
+        "Gần bằng, nhỏ hơn nhiều"
+      ],
+      "emphasis": [
+        "distillation"
+      ]
+    },
+    {
+      "id": "s23",
+      "type": "chart",
+      "durationTargetSec": 8,
+      "narration": "Gemma ba n của Google tổng cộng hơn năm tỷ tham số, nhưng mỗi lần chạy chỉ nạp khoảng một phẩy chín một tỷ vào bộ nhớ.",
+      "onScreenText": "Gemma 3n: >5B tổng, ~1,91B nạp hiệu dụng",
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ vòng tròn so sánh: 5 tỷ tham số tổng vs 1,91 tỷ tham số nạp hiệu dụng, tông xanh lá và xám"
+      },
+      "emphasis": [
+        "Gemma 3n",
+        "1,91B"
+      ]
+    },
+    {
+      "id": "s24",
+      "type": "imageFull",
+      "durationTargetSec": 7,
+      "narration": "Apple thì dùng quantization aware ở mức hai bit, cộng thêm chia sẻ cache. Mô hình khoảng ba tỷ tham số chạy ngay trên máy.",
+      "onScreenText": "Apple: 2-bit QAT + KV-cache sharing",
+      "emphasis": [
+        "2-bit",
+        "on-device"
+      ]
+    },
+    {
+      "id": "s25",
+      "type": "stat",
+      "durationTargetSec": 6,
+      "narration": "Nhưng có đánh đổi. Tài liệu chính thức của Google thừa nhận: quantization thường làm giảm chất lượng output.",
+      "onScreenText": "Đánh đổi: quantization = giảm chất lượng",
+      "kicker": "Cảnh báo",
+      "emphasis": [
+        "đánh đổi"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ đường cong đánh đổi hai trục: kích thước mô hình giảm dần trong khi chất lượng output giảm theo, tông xanh và cam nhạt"
+      }
+    },
+    {
+      "id": "s26",
+      "type": "chapter",
+      "durationTargetSec": 6,
+      "narration": "Chương bốn. Phần cứng, điều kiện cần để làn sóng này thành công.",
+      "onScreenText": "Chương 4 — Phần cứng đủ mạnh",
+      "kicker": "Chương 4",
+      "emphasis": [
+        "phần cứng"
+      ]
+    },
+    {
+      "id": "s27",
+      "type": "bullets",
+      "durationTargetSec": 8,
+      "narration": "Chuẩn Copilot+ PC của Microsoft đòi hỏi cụ thể: NPU tối thiểu bốn mươi TOPS, RAM mười sáu gigabyte, ổ SSD hai trăm năm mươi sáu gigabyte.",
+      "bullets": [
+        "NPU ≥ 40 TOPS",
+        "RAM ≥ 16 GB",
+        "SSD ≥ 256 GB"
+      ],
+      "emphasis": [
+        "40 TOPS",
+        "Copilot+ PC"
+      ]
+    },
+    {
+      "id": "s28",
+      "type": "stat",
+      "durationTargetSec": 7,
+      "narration": "Qualcomm đạt bốn mươi lăm TOPS với Snapdragon X. Điện thoại flagship ngày nay cũng có NPU tương đương về mặt khái niệm.",
+      "onScreenText": "Snapdragon X: 45 TOPS",
+      "emphasis": [
+        "45 TOPS"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ cột hiệu năng NPU: ngưỡng Copilot+ PC 40 TOPS và Snapdragon X 45 TOPS, vạch ngang đánh dấu ngưỡng tối thiểu"
+      }
+    },
+    {
+      "id": "s29",
+      "type": "chart",
+      "durationTargetSec": 7,
+      "narration": "Đổi lại, mỗi lượt hỏi lên đám mây mất khoảng một trăm tới năm trăm mili giây. Xử lý cục bộ chỉ dưới mười tới hai mươi mili giây.",
+      "onScreenText": "Cloud 100–500ms vs cục bộ <10–20ms",
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ thanh ngang so sánh độ trễ: đám mây 100-500 mili giây, xử lý cục bộ dưới 10-20 mili giây"
+      },
+      "emphasis": [
+        "độ trễ"
+      ]
+    },
+    {
+      "id": "s30",
+      "type": "stat",
+      "durationTargetSec": 6,
+      "narration": "Với người dùng, đó là cảm giác trả lời tức thì, thay vì phải chờ vài nhịp. Đây là lý do dễ thấy nhất.",
+      "onScreenText": "Trả lời tức thì = cảm nhận rõ nhất",
+      "emphasis": [
+        "tức thì"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ trục thời gian phản hồi: thanh dài mang nhãn chờ vài nhịp so với thanh ngắn mang nhãn tức thì, phong cách tối giản"
+      }
+    },
+    {
+      "id": "s31",
+      "type": "bullets",
+      "durationTargetSec": 7,
+      "narration": "Bốn lý do thực dụng. Độ trễ thấp. Chi phí gần bằng không. Dữ liệu không rời máy. Và chạy được cả khi ngoại tuyến.",
+      "bullets": [
+        "Độ trễ thấp",
+        "Chi phí gần bằng không",
+        "Riêng tư hơn",
+        "Chạy ngoại tuyến"
+      ],
+      "emphasis": [
+        "bốn lý do"
+      ]
+    },
+    {
+      "id": "s32",
+      "type": "stat",
+      "durationTargetSec": 7,
+      "narration": "Gửi một triệu token qua API đám mây tốn khoảng năm tới mười lăm đô la. Còn chạy trên máy, chi phí điện gần như bằng không.",
+      "onScreenText": "API: ~5–15 USD / 1M token",
+      "kicker": "Chi phí",
+      "emphasis": [
+        "5–15 USD"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ cột chi phí trên một triệu token: thanh API 5-15 đô la cao rõ rệt, thanh chạy cục bộ gần bằng không, nhãn đơn vị USD"
+      }
+    },
+    {
+      "id": "s33",
+      "type": "chart",
+      "durationTargetSec": 12,
+      "narration": "Theo Market.us, dẫn lại trong một bài review khoa học, thị trường edge AI dự báo tăng từ mười lăm phẩy hai tỷ đô la năm hai nghìn hai trăm hai mươi hai, lên một trăm bốn mươi ba tỷ đô la năm hai nghìn ba mươi hai.",
+      "onScreenText": "Edge AI: 15,2 tỷ USD (2022) → 143,6 tỷ USD (2032)",
+      "kicker": "Thị trường",
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ vùng tăng trưởng: thị trường edge AI từ 15,2 tỷ đô la năm 2022 lên 143,6 tỷ đô la năm 2032"
+      },
+      "emphasis": [
+        "edge AI",
+        "thị trường"
+      ],
+      "notes": "Trích một nguồn duy nhất (Market.us qua arXiv 2409.00088) vì các nguồn ước tính mâu thuẫn đáng kể."
+    },
+    {
+      "id": "s34",
+      "type": "chapter",
+      "durationTargetSec": 6,
+      "narration": "Chương năm. Sản phẩm thật, không chỉ nằm trên paper.",
+      "onScreenText": "Chương 5 — Sản phẩm lên kệ",
+      "kicker": "Chương 5",
+      "emphasis": [
+        "sản phẩm thật"
+      ]
+    },
+    {
+      "id": "s35",
+      "type": "bullets",
+      "durationTargetSec": 7,
+      "narration": "Apple Intelligence chạy mô hình khoảng ba tỷ tham số ngay trên máy. Framework Foundation Models cho developer gọi trực tiếp từ Swift.",
+      "bullets": [
+        "Mô hình ~3B on-device",
+        "Foundation Models framework",
+        "Gọi trực tiếp từ Swift"
+      ],
+      "emphasis": [
+        "Apple",
+        "3B on-device"
+      ]
+    },
+    {
+      "id": "s36",
+      "type": "stat",
+      "durationTargetSec": 7,
+      "narration": "Báo cáo kỹ thuật Apple năm hai nghìn hai trăm hai mươi năm: mô hình on-device của họ thắng đối thủ ba tỷ tham số của Qwen trên mọi ngôn ngữ được đo.",
+      "onScreenText": "AFM on-device beat Qwen-2.5-3B",
+      "kicker": "Tech report",
+      "emphasis": [
+        "đối thủ 3B"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ cột nhóm theo ngôn ngữ: cột mô hình Apple on-device cao hơn cột Qwen-2.5-3B ở mọi cụm ngôn ngữ, chỉ ghi nhãn nhóm ngôn ngữ, nền tối"
+      }
+    },
+    {
+      "id": "s37",
+      "type": "imageFull",
+      "durationTargetSec": 7,
+      "narration": "Google có Gemma ba n, xử lý cả văn bản, ảnh, video và âm thanh, huấn luyện trên hơn một trăm bốn mươi ngôn ngữ.",
+      "onScreenText": "Gemma 3n: đa phương thức, 140+ ngôn ngữ",
+      "emphasis": [
+        "Gemma 3n",
+        "đa phương thức"
+      ]
+    },
+    {
+      "id": "s38",
+      "type": "bullets",
+      "durationTargetSec": 7,
+      "narration": "Meta có Llama ba chấm hai, bản một và ba tỷ cho di động. Microsoft có dòng Phi, bản ba phẩy tám tỷ, license MIT.",
+      "bullets": [
+        "Llama 3.2: 1B và 3B",
+        "Phi-4-mini: 3,8B",
+        "License MIT"
+      ],
+      "emphasis": [
+        "Llama 3.2",
+        "Phi"
+      ]
+    },
+    {
+      "id": "s39",
+      "type": "stat",
+      "durationTargetSec": 7,
+      "narration": "IDC dự báo nhiều khối lượng công việc AI sẽ chuyển từ data center xuống ngay cạnh người dùng. Tiền đang chảy theo hướng đó.",
+      "onScreenText": "IDC: công việc AI dịch về edge",
+      "kicker": "Dòng tiền",
+      "emphasis": [
+        "edge",
+        "dự báo"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ chuyển dịch mũi tên: khối lượng công việc AI di chuyển từ cột data center lớn sang cột edge nhỏ hơn ở rìa, theo hướng tăng dần, tông xanh"
+      }
+    },
+    {
+      "id": "s40",
+      "type": "chapter",
+      "durationTargetSec": 6,
+      "narration": "Chương sáu. Giới hạn, phần mà nhiều bài viết bỏ qua.",
+      "onScreenText": "Chương 6 — Giới hạn thật",
+      "kicker": "Chương 6",
+      "emphasis": [
+        "giới hạn"
+      ]
+    },
+    {
+      "id": "s41",
+      "type": "quote",
+      "durationTargetSec": 6,
+      "narration": "Apple nói thẳng về mô hình ba tỷ của mình: đây không phải chatbot kiến thức thế giới chung.",
+      "onScreenText": "\"Không phải chatbot kiến thức thế giới chung\" — Apple",
+      "kicker": "Trích dẫn",
+      "emphasis": [
+        "không phải chatbot"
+      ]
+    },
+    {
+      "id": "s42",
+      "type": "stat",
+      "durationTargetSec": 7,
+      "narration": "Hơn nữa, chính Apple đang chạy ba tầng: máy, đám mây riêng, và cả Gemini của Google cho tác vụ nặng.",
+      "onScreenText": "3 tầng: on-device → Private Cloud Compute → Gemini",
+      "emphasis": [
+        "ba tầng",
+        "hybrid"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Sơ đồ ba tầng xếp dọc: on-device ở dưới, Private Cloud Compute ở giữa, Gemini của Google ở trên, mũi tên chuyển tầng hướng lên, phong cách diagram sạch"
+      }
+    },
+    {
+      "id": "s43",
+      "type": "imageFull",
+      "durationTargetSec": 7,
+      "narration": "Báo cáo gần đây cho biết mô hình hai mươi tỷ của Apple nằm trong flash, mỗi prompt chỉ nạp một tới bốn tỷ tham số chuyên gia.",
+      "onScreenText": "20B trong flash, nạp 1–4B mỗi prompt",
+      "emphasis": [
+        "flash storage"
+      ]
+    },
+    {
+      "id": "s44",
+      "type": "bullets",
+      "durationTargetSec": 7,
+      "narration": "Mô hình nhỏ yếu ở đâu? Suy luận phức tạp. Context dài. Đa nhiệm. Hiện tượng mất trong giữa vẫn xuất hiện.",
+      "bullets": [
+        "Suy luận phức tạp",
+        "Context dài",
+        "Đa nhiệm"
+      ],
+      "emphasis": [
+        "yếu ở đâu"
+      ]
+    },
+    {
+      "id": "s45",
+      "type": "stat",
+      "durationTargetSec": 7,
+      "narration": "Gần một nửa trong sáu mươi benchmark ngôn ngữ đã bị bão hóa. Nên mọi so sánh phần trăm đều cần được đọc với thái độ hoài nghi.",
+      "onScreenText": "~50% benchmark ngôn ngữ đã bão hòa",
+      "kicker": "Cảnh báo",
+      "emphasis": [
+        "bão hòa",
+        "hoài nghi"
+      ],
+      "visual": {
+        "kind": "chart",
+        "prompt": "Biểu đồ tròn 60 benchmark ngôn ngữ, gần một nửa tô đậm thành màu cam bão hòa, phần còn lại xám, nhãn phần trăm"
+      }
+    },
+    {
+      "id": "s46",
+      "type": "bullets",
+      "durationTargetSec": 7,
+      "narration": "Về riêng tư, on-device không phải tuyệt đối. Thiết bị phân tán mở rộng bề mặt tấn công, và chính ứng dụng vẫn có thể gửi dữ liệu đi.",
+      "bullets": [
+        "Bề mặt tấn công rộng hơn",
+        "App vẫn có thể gửi dữ liệu",
+        "Không phải tuyệt đối"
+      ],
+      "emphasis": [
+        "riêng tư",
+        "cảnh báo"
+      ]
+    },
+    {
+      "id": "s47",
+      "type": "recap",
+      "durationTargetSec": 9,
+      "narration": "Tóm lại. Một: AI trên máy là sự trở lại, không phải phát minh. Hai: kỹ thuật nén giúp mô hình một tới bốn tỷ chạy mượt trên điện thoại. Ba: phần cứng đã đủ mạnh.",
+      "onScreenText": "1. Trở lại · 2. Nén mô hình · 3. Phần cứng",
+      "emphasis": [
+        "tóm tắt"
+      ]
+    },
+    {
+      "id": "s48",
+      "type": "recap",
+      "durationTargetSec": 9,
+      "narration": "Bốn: cloud không bị thay thế, nó là lớp dự phòng cho việc nặng. Năm: mô hình nhỏ yếu ở suy luận phức tạp và context dài. Sáu: hãy đọc benchmark một cách hoài nghi.",
+      "onScreenText": "4. Cloud vẫn cần · 5. Yếu suy luận · 6. Benchmark bão hòa",
+      "emphasis": [
+        "tóm tắt"
+      ]
+    },
+    {
+      "id": "s49",
+      "type": "recap",
+      "durationTargetSec": 7,
+      "narration": "Câu hỏi không phải là AI trên máy hay đám mây thắng. Câu hỏi là: việc gì nên chạy ngay trên máy của bạn.",
+      "onScreenText": "Việc gì nên chạy trên máy của bạn?",
+      "emphasis": [
+        "câu hỏi cuối"
+      ]
+    },
+    {
+      "id": "s50",
+      "type": "outro",
+      "durationTargetSec": 7,
+      "narration": "Bạn đang dùng tính năng AI chạy on-device nào? Comment bên dưới. Like và subscribe để xem tiếp series về AI trên thiết bị.",
+      "onScreenText": "Comment trải nghiệm của bạn · Subscribe",
+      "emphasis": [
+        "comment",
+        "subscribe"
+      ]
+    }
+  ],
+  "cta": {
+    "text": "Comment trải nghiệm AI on-device của bạn và đăng ký kênh để xem tiếp series AI trên thiết bị"
+  }
+}

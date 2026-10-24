@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "description": "Thông số kỹ thuật cho từng format video. Là nguồn sự thật duy nhất cho cả Python (tính frame) và Remotion (layout).",
+  "wordsPerSecond": 3.1,
+  "formats": {
+    "short": {
+      "label": "Short 9:16",
+      "aspect": "9:16",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "targetDurationSec": [20, 60],
+      "sceneCount": [8, 25],
+      "sceneDurationSec": [1.5, 5],
+      "maxWordsPerScene": 14,
+      "hookWindowSec": 1.5,
+      "platforms": ["tiktok", "reels", "shorts"],
+      "safeArea": { "top": 220, "bottom": 380, "left": 60, "right": 140 },
+      "caption": {
+        "mode": "phrase",
+        "maxWordsPerCard": 6,
+        "minCardSec": 0.9,
+        "position": "lower-center",
+        "fontSizePx": 58,
+        "strokePx": 6,
+        "uppercase": false
+      },
+      "typography": {
+        "titleMaxChars": 28,
+        "bodyMaxChars": 60,
+        "maxLines": 3
+      },
+      "motion": {
+        "defaultTransition": "cut",
+        "transitionDurationSec": 0.15,
+        "allowSlowPan": false
+      },
+      "sceneTypes": [
+        "hook", "stat", "punch", "list", "timeline", "compare",
+        "captionStack", "title", "bullets", "quote", "imageFull",
+        "chart", "outro"
+      ],
+      "firstSceneType": "hook",
+      "requiredSceneTypes": ["hook", "outro"]
+    },
+    "long": {
+      "label": "Long 16:9",
+      "aspect": "16:9",
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "targetDurationSec": [300, 900],
+      "sceneCount": [20, 90],
+      "sceneDurationSec": [6, 25],
+      "maxWordsPerScene": 55,
+      "hookWindowSec": 15,
+      "platforms": ["youtube"],
+      "safeArea": { "top": 80, "bottom": 120, "left": 120, "right": 120 },
+      "caption": {
+        "mode": "sentence",
+        "maxWordsPerCard": 12,
+        "position": "lower-center",
+        "fontSizePx": 42,
+        "strokePx": 4,
+        "uppercase": false
+      },
+      "typography": {
+        "titleMaxChars": 60,
+        "bodyMaxChars": 140,
+        "maxLines": 4
+      },
+      "motion": {
+        "defaultTransition": "fade",
+        "transitionDurationSec": 0.3,
+        "allowSlowPan": true
+      },
+      "sceneTypes": [
+        "title", "chapter", "bullets", "quote", "imageFull",
+        "chart", "stat", "lowerThird", "recap", "outro"
+      ],
+      "firstSceneType": "title",
+      "requiredSceneTypes": ["title", "outro"],
+      "minChapterScenes": 2
+    }
+  }
+}
