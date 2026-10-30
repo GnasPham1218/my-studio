@@ -254,6 +254,8 @@ export type Props = {
   captions: CaptionCard[];
   /** Xuất cho CapCut: bỏ chuyển cảnh, caption và audio (CapCut tự thêm). */
   capcut?: boolean;
+  /** Bản xem trước khi chưa có giọng đọc: không phát audio/SFX. */
+  silent?: boolean;
   /** Chữ trên thumbnail (project.json → thumbnail); thiếu thì dùng title. */
   thumbnail?: { text?: string; emphasis?: string[]; kicker?: string };
 };

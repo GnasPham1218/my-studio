@@ -79,19 +79,21 @@ export const ExplainerVideo: React.FC<Props> = (props) => {
                   />
                 </SceneTransition>
               </Sequence>
-              <Sequence
-                from={from}
-                durationInFrames={duration}
-                name={`voice ${scene.id}`}
-                layout="none"
-              >
-                <Audio src={staticFile(`${props.audioDir}/${scene.id}.wav`)} />
-              </Sequence>
+              {props.silent ? null : (
+                <Sequence
+                  from={from}
+                  durationInFrames={duration}
+                  name={`voice ${scene.id}`}
+                  layout="none"
+                >
+                  <Audio src={staticFile(`${props.audioDir}/${scene.id}.wav`)} />
+                </Sequence>
+              )}
             </React.Fragment>
           );
         })}
 
-        {props.sfxDir
+        {props.sfxDir && !props.silent
           ? props.scenes.map((scene) => {
               if (!scene.sfx || scene.sfx === "none") {
                 return null;

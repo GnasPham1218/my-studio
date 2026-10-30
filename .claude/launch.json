@@ -4,8 +4,29 @@
     {
       "name": "remotion-studio",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "video", "run", "studio", "--", "--no-open", "--port", "3005"],
+      "runtimeArgs": [
+        "--prefix",
+        "video",
+        "run",
+        "studio",
+        "--",
+        "--no-open",
+        "--port",
+        "3005"
+      ],
       "port": 3005
+    },
+    {
+      "name": "review-ui",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": [
+        "-m",
+        "pipeline.ui",
+        "--no-browser",
+        "--port",
+        "8765"
+      ],
+      "port": 8765
     }
   ]
 }

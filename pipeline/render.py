@@ -150,7 +150,7 @@ def main(argv: list[str] | None = None) -> int:
     frames, fps = total_frames(props_file)
     if args.preview is not None:
         frames = min(frames, max(1, int(round(args.preview * fps))))
-    bar = Progress(frames, "Render", unit="frame")
+    bar = Progress(frames, "CapCut clip" if args.capcut else "Render", unit="frame")
 
     proc = subprocess.Popen(
         command,

@@ -16,5 +16,16 @@
       "AI",
       "máy"
     ]
-  }
+  },
+  "review": {
+    "short": {
+      "status": "approved",
+      "scriptHash": "76a1b5404b1f299a",
+      "approvedAt": "2026-10-30T20:15:45",
+      "rejectedAt": null,
+      "factcheck": "skipped",
+      "note": ""
+    }
+  },
+  "updatedAt": "2026-10-30T20:15:45"
 }

@@ -32,11 +32,74 @@ Chi tiết torch/CUDA và giọng đọc: xem mục *Cài đặt* trong [README]
 python -m pipeline.script --topic "Vì sao AI đang quay về máy của bạn" --format short
 ```
 
+Bước này (và fact-check ở bước 2) cần AI. Có **hai chế độ**, chọn một:
+
+| Chế độ | Cần cài | Cách chọn |
+|---|---|---|
+| **OpenCode** (mặc định) | `opencode` | không cần làm gì, hoặc `--llm opencode` |
+| **Claude** | Claude Code (`claude`), đã đăng nhập | thêm `--llm claude` |
+
+```powershell
+python -m pipeline.script --topic "..." --format short --llm claude
+python -m pipeline.script --topic "..." --format short --llm claude --model opus
+python -m pipeline.review --project-id <id> --format short --factcheck --llm claude
+```
+
+Muốn lúc nào cũng dùng Claude mà không gõ `--llm`, đặt biến môi trường một
+lần (mở terminal mới để có hiệu lực):
+
+```powershell
+[Environment]::SetEnvironmentVariable("MY_STUDIO_LLM", "claude", "User")
+```
+
+Hai chế độ dùng **chung** các agent trong `.opencode/agents/` (cùng prompt,
+cùng quyền): agent chỉ được đọc web và chỉ ghi vào `projects/`, không chạy lệnh.
+`--model` với OpenCode là `provider/model`, với Claude là `sonnet`, `opus`,
+`haiku` hoặc id model.
+
 Agent tự research và viết kịch bản vào `projects/<id>/scripts/short.json`.
 `<id>` in ra cuối lệnh (ví dụ `ai-nho-tren-may`). Muốn sửa câu chữ thì sửa
 thẳng file này.
 
 ### Bước 2. Duyệt nội dung (bắt buộc)
+
+**Cách dễ nhất: giao diện duyệt.**
+
+```powershell
+python -m pipeline.ui
+```
+
+Trình duyệt mở `http://127.0.0.1:8765` (chỉ chạy trên máy bạn):
+
+Làm theo 3 bước, hiện ở đầu trang:
+
+1. **Đọc kịch bản & nguồn**
+   - Giữa: lời đọc của từng cảnh, sửa trực tiếp được. Dưới mỗi cảnh: lỗi (đỏ),
+     số liệu chưa gắn nguồn (vàng), các khẳng định kèm số nguồn `[n]` và kết quả
+     fact-check.
+   - Phải: **nguồn tham khảo** (tên, link, ngày truy cập, cảnh nào trích dẫn),
+     nút **Kiểm tra link**, các **giả định**, và **research.md** (ghi chép
+     nghiên cứu agent đã làm).
+   - **Lưu** → **Fact-check** (tuỳ chọn) → sang bước 2.
+2. **Duyệt…** (hoặc **Từ chối…** kèm lý do). Sửa kịch bản sau khi duyệt thì
+   phải duyệt lại.
+3. **Animation & tạo video**: chỉ mở sau khi đã duyệt.
+   - Mỗi cảnh có **mô tả chuyển động** theo thứ tự xảy ra: chuyển cảnh vào,
+     nền, phần tử nào hiện lúc nào (giây), hình minh hoạ chuyển động ra sao,
+     âm thanh, phụ đề.
+   - Ô **Ghi chú / yêu cầu chỉnh animation** cho từng cảnh → **Lưu ghi chú
+     animation**. Ghi chú lưu riêng ở `projects/<id>/review/animation-<format>.json`
+     (không sửa kịch bản nên không mất phê duyệt); agent `motion-sfx` đọc file
+     này khi được nhờ chỉnh animation.
+   - Bên phải: xem trước animation (không có giọng đọc, thời lượng ước tính),
+     **▶ Xem cảnh** để nhảy tới cảnh. Ổn thì **Tạo video** (chạy `pipeline.make`,
+     tuỳ chọn kèm dự án CapCut, log hiện ngay bên dưới).
+
+Server cũng chặn dựng animation khi kịch bản chưa được duyệt, không chỉ ẩn nút.
+
+Fact-check từ giao diện dùng chế độ AI đang chọn: `python -m pipeline.ui --llm claude`.
+
+Hoặc dùng dòng lệnh:
 
 ```powershell
 python -m pipeline.review --project-id ai-nho-tren-may --format short

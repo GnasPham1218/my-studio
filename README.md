@@ -1,8 +1,10 @@
 # my-studio — pipeline video tự động cho nhiều kênh (DiveCode1218, EnglishLearner1218)
 
 Research → kịch bản → voiceover → phụ đề → render MP4 + thumbnail → (tuỳ chọn)
-dự án CapCut. Chạy hoàn toàn local, không API trả phí, không LLM local (việc
-viết do OpenCode agent đảm nhiệm).
+dự án CapCut. Giọng đọc, phụ đề và render chạy hoàn toàn local; việc viết và
+fact-check do agent đảm nhiệm, chạy bằng **OpenCode** (mặc định) hoặc **Claude
+Code** (`--llm claude` hoặc `MY_STUDIO_LLM=claude`), dùng chung định nghĩa
+agent trong `.opencode/agents/`.
 
 > **Người làm video:** đọc [Hướng dẫn sử dụng](docs/HUONG-DAN.md) — từng bước từ
 > chủ đề tới video, thumbnail và dự án CapCut.
@@ -94,6 +96,12 @@ Scene có số liệu nên khai `claims` (khẳng định + số thứ tự ngu�
 `factchecker` và in báo cáo duyệt (bỏ qua bằng `--skip-factcheck`).
 
 ### 2. Duyệt nội dung (bắt buộc trước TTS)
+
+Giao diện web (sửa từng cảnh, xem trước animation bằng Remotion Player, duyệt,
+tạo video): `python -m pipeline.ui` → `http://127.0.0.1:8765`. Server chuẩn
+thư viện (`pipeline/ui.py`), frontend ở `video/ui/` build bằng esbuild khi khởi
+động; bản xem trước dựng từ `pipeline/preview.py` (thời lượng ước tính, không
+audio). Hoặc dòng lệnh:
 
 ```powershell
 # Báo cáo: lỗi validate, số liệu chưa gắn nguồn, link nguồn chết, kết quả fact-check
@@ -388,7 +396,7 @@ out/<projectId>/
 | `config/brands/<id>.json` | Brand cho kênh khác; project chọn bằng `"brand": "<id>"` |
 | `config/sfx.json` | Danh mục SFX, volume mặc định, policy (whoosh bị cấm) |
 | `pipeline/paths.py` | Nguồn duy nhất quy định `projects/` (source) vs `out/` (output), snapshot, status |
-| `pipeline/llm.py` | Bọc `opencode run --format json` |
+| `pipeline/llm.py` | Chạy agent bằng `opencode run` hoặc `claude -p` (quyền OpenCode dịch sang tool Claude Code) |
 | `pipeline/validate.py` | JSON Schema + luật ngữ nghĩa |
 | `pipeline/script.py` | Research → script → repair loop → fact-check |
 | `pipeline/review.py` | Báo cáo duyệt, kiểm link nguồn, fact-check, approve/reject, cổng chặn trước TTS/build |

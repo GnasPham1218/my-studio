@@ -101,9 +101,8 @@ if (thumbnailOut) {
     const duration = Math.max(1, Math.round(scene.durationSec * fps));
     return [from, Math.min(composition.durationInFrames, from + duration) - 1];
   });
-  const totalFrames =
-    ranges.reduce((sum, [a, b]) => sum + (b - a + 1), 0) +
-    composition.durationInFrames;
+  // Thanh tiến trình chỉ đếm frame của clip; audio.wav xuất sau, báo bằng dòng log.
+  const totalFrames = ranges.reduce((sum, [a, b]) => sum + (b - a + 1), 0);
   let done = 0;
   const emit = (extra) =>
     process.stdout.write(`PROGRESS ${done + extra} ${totalFrames}\n`);
@@ -130,6 +129,7 @@ if (thumbnailOut) {
   }
 
   // Giọng + SFX gộp thành một file, khớp từ giây 0 của video.
+  console.log("Xuất audio.wav (giọng + SFX)…");
   await renderMedia({
     composition,
     serveUrl,
@@ -138,12 +138,8 @@ if (thumbnailOut) {
     inputProps: props,
     ...browserOption,
     logLevel,
-    onProgress: ({ progress }) =>
-      emit(Math.round(progress * composition.durationInFrames)),
   });
-  done = totalFrames;
-  emit(0);
-  console.log(`\n✓ ${capcutDir}`);
+  console.log(`✓ audio.wav\n✓ ${capcutDir}`);
 } else if (stillFrame !== undefined) {
   const frame = Number(stillFrame);
   const output =

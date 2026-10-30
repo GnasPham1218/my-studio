@@ -453,8 +453,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--no-factcheck", action="store_true", help="[--approve] Duyệt khi chưa fact-check")
     parser.add_argument("--force", action="store_true", help="[--approve] Duyệt dù fact-check có verdict wrong")
     parser.add_argument("--no-links", action="store_true", help="Không kiểm tra link nguồn (offline)")
-    parser.add_argument("--model", help="[--factcheck] provider/model cho OpenCode")
+    parser.add_argument(
+        "--llm",
+        choices=llm.BACKENDS,
+        help="[--factcheck] chạy bằng OpenCode hay Claude Code (mặc định: MY_STUDIO_LLM hoặc opencode)",
+    )
+    parser.add_argument(
+        "--model",
+        help="[--factcheck] OpenCode: provider/model; Claude: sonnet, opus, haiku…",
+    )
     args = parser.parse_args(argv)
+    llm.use(args.llm)
 
     pid = args.project_id
     fmt = args.format or paths.detect_format(pid)

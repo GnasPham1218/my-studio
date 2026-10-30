@@ -179,6 +179,14 @@ soundfile, Pillow. Build phải truyền `--format` khi project có cả short/l
    nhưng không lấn giọng, không có SFX thừa.
 9. Báo lại ngắn gọn bằng tiếng Việt.
 
+## Ghi chú của người duyệt
+
+Nếu có `projects/<projectId>/review/animation-<format>.json` (ghi từ giao diện
+`python -m pipeline.ui`, dạng `{"notes": {"s01": "…"}}`), đó là yêu cầu chỉnh
+animation theo từng cảnh: đọc trước và ưu tiên làm theo. Mô tả chuyển động hiện
+tại của mỗi cảnh nằm ở `pipeline/motion.py`; đổi chuyển động trong component thì
+cập nhật bảng đó cho khớp.
+
 ## Định dạng báo cáo
 
 Trả về:

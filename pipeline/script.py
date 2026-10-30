@@ -317,7 +317,15 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Tạo short từ script.long.json đã có (không research lại)",
     )
-    parser.add_argument("--model", help="provider/model, mặc định theo OpenCode")
+    parser.add_argument(
+        "--llm",
+        choices=llm.BACKENDS,
+        help="Chạy agent bằng OpenCode hay Claude Code (mặc định: MY_STUDIO_LLM hoặc opencode)",
+    )
+    parser.add_argument(
+        "--model",
+        help="OpenCode: provider/model; Claude: sonnet, opus, haiku hoặc id model",
+    )
     parser.add_argument("--max-repairs", type=int, default=2)
     parser.add_argument(
         "--skip-factcheck",
@@ -325,6 +333,8 @@ def main(argv: list[str] | None = None) -> int:
         help="Không chạy agent factchecker sau khi viết script",
     )
     args = parser.parse_args(argv)
+    llm.use(args.llm)
+    print(f"Agent chạy bằng: {llm.backend()}")
 
     if args.from_long:
         if not args.project_id:

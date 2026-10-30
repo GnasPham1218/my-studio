@@ -15,3 +15,6 @@ references/
 *.mov
 *.webm
 *.thumbnail.jpg
+
+# Bản build giao diện duyệt (pipeline.ui tự build lại khi chạy).
+video/ui/dist/

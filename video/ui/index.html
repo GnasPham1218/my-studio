@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Duyệt kịch bản</title>
+    <link rel="stylesheet" href="/app.css" />
+    <style>
+      :root {
+        --bg: #0b0f16;
+        --panel: #121823;
+        --panel-2: #182030;
+        --line: #243044;
+        --fg: #e8edf5;
+        --muted: #8a97ab;
+        --primary: #22d3ee;
+        --ok: #34d399;
+        --warn: #fbbf24;
+        --bad: #f87171;
+        color-scheme: dark;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font: 14px/1.5 "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+      }
+      button, input, textarea, select { font: inherit; color: inherit; }
+      button {
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 7px 14px;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) { border-color: var(--primary); }
+      button:disabled { opacity: 0.45; cursor: not-allowed; }
+      button.primary { background: var(--primary); border-color: var(--primary); color: #04131a; font-weight: 700; }
+      button.danger { border-color: #5b2a2a; color: var(--bad); }
+      input, textarea, select {
+        width: 100%;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+      }
+      textarea { resize: vertical; min-height: 64px; }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); }
+      label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 4px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

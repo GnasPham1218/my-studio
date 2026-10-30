@@ -23,6 +23,11 @@ def stage(name: str, index: int | None = None) -> float:
     return time.perf_counter()
 
 
+def substep(name: str) -> None:
+    """Đầu mục nhỏ trong một stage, để log phân biệt các lần render."""
+    print(f"\n── {name}", flush=True)
+
+
 def done(name: str, started: float) -> None:
     print(f"✓ {name} · {time.perf_counter() - started:.1f}s", flush=True)
 
@@ -68,7 +73,14 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Sau khi render, xuất thêm bộ file + draft CapCut (pipeline.capcut)",
     )
+    parser.add_argument(
+        "--capcut-only",
+        action="store_true",
+        help="Chỉ tạo dự án CapCut (+ thumbnail), bỏ render video MP4 hoàn chỉnh",
+    )
     args = parser.parse_args(argv)
+    if args.capcut_only and (args.still is not None or args.preview is not None):
+        parser.error("--capcut-only không đi cùng --still/--preview")
 
     base: list[str] = ["--project-id", args.project_id, "--format", args.format]
     # align không đọc nội dung script để hiển thị nên không cần cổng duyệt.
@@ -129,38 +141,35 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     started = stage("Render", 4)
+    full = args.still is None and args.preview is None
     for aspect_id in aspects:
-        render_args: list[str] = [
-            "--project-id",
-            args.project_id,
-            "--format",
-            args.format,
-            "--aspect",
-            aspect_id,
-        ]
-        if args.still is not None:
-            render_args += ["--still", str(args.still)]
-        if args.preview is not None:
-            render_args += ["--preview", str(args.preview)]
-        if args.scale != 1.0:
-            render_args += ["--scale", str(args.scale)]
-        code = render.main(render_args)
-        if code != 0:
-            return code
-        full = args.still is None and args.preview is None
-        if full:
-            # Ảnh bìa đi kèm mỗi video, cùng khung hình.
-            code = render.main(
-                ["--project-id", args.project_id, "--format", args.format,
-                 "--aspect", aspect_id, "--thumbnail"]
-            )
+        target = ["--project-id", args.project_id, "--format", args.format, "--aspect", aspect_id]
+        if not args.capcut_only:
+            render_args = list(target)
+            if args.still is not None:
+                render_args += ["--still", str(args.still)]
+            if args.preview is not None:
+                render_args += ["--preview", str(args.preview)]
+            if args.scale != 1.0:
+                render_args += ["--scale", str(args.scale)]
+            substep(f"Video MP4 ({aspect_id}): giọng + phụ đề + chuyển cảnh")
+            code = render.main(render_args)
             if code != 0:
                 return code
-        if args.capcut and full:
-            code = capcut.main(
-                ["--project-id", args.project_id, "--format", args.format, "--aspect", aspect_id]
-                + gate
+        if full:
+            # Ảnh bìa đi kèm mỗi video, cùng khung hình.
+            substep(f"Thumbnail ({aspect_id})")
+            code = render.main([*target, "--thumbnail"])
+            if code != 0:
+                return code
+        if (args.capcut or args.capcut_only) and full:
+            # Không dùng lại được MP4 ở trên: CapCut cần clip sạch, chưa có
+            # phụ đề/chuyển cảnh, nên phải render riêng từng cảnh.
+            substep(
+                f"Dự án CapCut ({aspect_id}): render từng cảnh không phụ đề, "
+                "không chuyển cảnh + audio.wav"
             )
+            code = capcut.main([*target, *gate])
             if code != 0:
                 return code
     done("Render", started)

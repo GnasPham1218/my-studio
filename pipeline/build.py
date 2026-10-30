@@ -141,11 +141,43 @@ def compose(
 
     out = paths.out_dir(pid)
     audio_dir = paths.audio_dir(pid, fmt)
+    props = assemble_props(
+        pid,
+        fmt,
+        aspect_id,
+        script=script,
+        layout=layout,
+        template=template,
+        brand=brand,
+        sfx_items=sfx_items,
+        scenes=scenes,
+        cards=cards,
+        total=total,
+    )
+    props["audioDir"] = audio_dir.relative_to(out).as_posix()
+    props["sfxDir"] = (audio_dir / "sfx").relative_to(out).as_posix()
+    return Composed(props, cards, layout, brand, template)
+
+
+def assemble_props(
+    pid: str,
+    fmt: str,
+    aspect_id: str,
+    *,
+    script: dict[str, Any],
+    layout: dict[str, Any],
+    template: dict[str, Any],
+    brand: dict[str, Any],
+    sfx_items: dict[str, Any],
+    scenes: list[dict[str, Any]],
+    cards: list[captions.Card],
+    total: float,
+) -> dict[str, Any]:
+    """Props cho Remotion, chưa gắn thư mục audio (bản render và bản xem trước dùng chung)."""
     props = {
         "format": fmt,
         "aspect": aspect_id,
-        "audioDir": audio_dir.relative_to(out).as_posix(),
-        "sfxDir": (audio_dir / "sfx").relative_to(out).as_posix(),
+        "audioDir": "",
         "sfxCatalog": {
             sfx_id: {
                 "file": item["file"],
@@ -171,7 +203,7 @@ def compose(
     thumbnail = paths.read_project(pid).get("thumbnail")
     if thumbnail:
         props["thumbnail"] = thumbnail
-    return Composed(props, cards, layout, brand, template)
+    return props
 
 
 def write_caption_files(pid: str, fmt: str, aspect_id: str, built: Composed) -> Path:
