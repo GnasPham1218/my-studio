@@ -1,35 +1,33 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
 import type { Brand } from "../lib/types";
-import type { CaptionTheme } from "../styles";
 import { fontMono, withAlpha } from "../lib/theme";
+import { useLayout, useTemplate } from "../lib/context";
 
-export const Watermark: React.FC<{
-  brand: Brand;
-  format: "short" | "long";
-  theme?: CaptionTheme;
-}> = ({ brand, format, theme = "tech" }) => {
-  const paper = theme === "paper";
+export const Watermark: React.FC<{ brand: Brand }> = ({ brand }) => {
+  const { chrome } = useLayout();
+  const { watermark: look } = useTemplate().chrome;
+  const place = chrome.watermark;
   return (
     <AbsoluteFill style={{ pointerEvents: "none" }}>
       <div
         style={{
           position: "absolute",
-          top: format === "short" ? 120 : 48,
-          right: 44,
+          top: place.top,
+          right: place.right,
           display: "flex",
           alignItems: "center",
           gap: 10,
-          opacity: paper ? 0.58 : 0.62,
+          opacity: look.opacity,
           fontFamily: fontMono,
-          fontSize: format === "short" ? 24 : 20,
+          fontSize: place.fontSize,
           fontWeight: 700,
-          letterSpacing: paper ? 1.5 : 3,
-          textTransform: paper ? "none" : "uppercase",
+          letterSpacing: look.letterSpacing,
+          textTransform: look.uppercase ? "uppercase" : "none",
           color: brand.colors.fg,
-          textShadow: paper
-            ? undefined
-            : `0 2px 12px ${withAlpha("#000000", 0.5)}`,
+          textShadow: look.glow
+            ? `0 2px 12px ${withAlpha("#000000", 0.5)}`
+            : undefined,
         }}
       >
         <span
@@ -38,7 +36,7 @@ export const Watermark: React.FC<{
             height: 9,
             borderRadius: "50%",
             backgroundColor: brand.colors.primary,
-            boxShadow: paper ? undefined : `0 0 14px ${brand.colors.primary}`,
+            boxShadow: look.glow ? `0 0 14px ${brand.colors.primary}` : undefined,
           }}
         />
         {brand.logo.wordmark}

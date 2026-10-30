@@ -8,15 +8,13 @@ import {
   renderStill,
   selectComposition,
 } from "@remotion/renderer";
+import { browserOption as findBrowser, makeFlag } from "./node-utils.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
 const argv = process.argv.slice(2);
 const projectArg = argv.find((item) => !item.startsWith("--"));
-const flag = (name) => {
-  const index = argv.indexOf(`--${name}`);
-  return index >= 0 ? argv[index + 1] : undefined;
-};
+const flag = makeFlag(argv);
 
 if (!projectArg) {
   console.error(
@@ -38,6 +36,11 @@ if (!fs.existsSync(propsPath)) {
 }
 
 const props = JSON.parse(fs.readFileSync(propsPath, "utf8"));
+// --capcut <thư-mục>: mỗi scene một clip không tiếng + audio.wav cả video.
+const capcutDir = flag("capcut");
+if (capcutDir) {
+  props.capcut = true;
+}
 const stillFrame = flag("still");
 const previewSeconds = flag("preview");
 const scale = Number(flag("scale") ?? 1);
@@ -45,19 +48,7 @@ const concurrency = flag("concurrency")
   ? Number(flag("concurrency"))
   : null;
 const logLevel = argv.includes("--verbose") ? "verbose" : "info";
-const browserCandidates = [
-  process.env.REMOTION_BROWSER_EXECUTABLE,
-  "C:/Program Files/Google/Chrome/Application/chrome.exe",
-  "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
-  "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
-  "C:/Program Files/Microsoft/Edge/Application/msedge.exe",
-].filter(Boolean);
-const browserExecutable =
-  browserCandidates.find((candidate) => fs.existsSync(candidate)) ?? null;
-const browserOption = browserExecutable ? { browserExecutable } : {};
-if (browserExecutable) {
-  console.log(`Browser: ${browserExecutable}`);
-}
+const browserOption = findBrowser();
 
 console.log(
   `Project: ${path.basename(projectDir)} · ${props.format} ${props.width}x${props.height} · ${props.totalSec.toFixed(1)}s`,
@@ -84,7 +75,59 @@ console.log(
   `Composition: ${composition.durationInFrames} frames @ ${composition.fps}fps`,
 );
 
-if (stillFrame !== undefined) {
+if (capcutDir) {
+  const scenesDir = path.join(capcutDir, "scenes");
+  fs.mkdirSync(scenesDir, { recursive: true });
+  const fps = composition.fps;
+  const ranges = props.scenes.map((scene) => {
+    const from = Math.round(scene.startSec * fps);
+    const duration = Math.max(1, Math.round(scene.durationSec * fps));
+    return [from, Math.min(composition.durationInFrames, from + duration) - 1];
+  });
+  const totalFrames =
+    ranges.reduce((sum, [a, b]) => sum + (b - a + 1), 0) +
+    composition.durationInFrames;
+  let done = 0;
+  const emit = (extra) =>
+    process.stdout.write(`PROGRESS ${done + extra} ${totalFrames}\n`);
+
+  for (const [index, scene] of props.scenes.entries()) {
+    const [start, end] = ranges[index];
+    await renderMedia({
+      composition,
+      serveUrl,
+      codec: "h264",
+      outputLocation: path.join(scenesDir, `${scene.id}.mp4`),
+      inputProps: props,
+      scale,
+      frameRange: [start, end],
+      crf: 18,
+      muted: true,
+      concurrency,
+      ...browserOption,
+      logLevel,
+      onProgress: ({ renderedFrames }) => emit(renderedFrames ?? 0),
+    });
+    done += end - start + 1;
+    console.log(`✓ ${scene.id}.mp4`);
+  }
+
+  // Giọng + SFX gộp thành một file, khớp từ giây 0 của video.
+  await renderMedia({
+    composition,
+    serveUrl,
+    codec: "wav",
+    outputLocation: path.join(capcutDir, "audio.wav"),
+    inputProps: props,
+    ...browserOption,
+    logLevel,
+    onProgress: ({ progress }) =>
+      emit(Math.round(progress * composition.durationInFrames)),
+  });
+  done = totalFrames;
+  emit(0);
+  console.log(`\n✓ ${capcutDir}`);
+} else if (stillFrame !== undefined) {
   const frame = Number(stillFrame);
   const output =
     flag("out") ?? path.join(path.dirname(propsPath), `still-${frame}.png`);

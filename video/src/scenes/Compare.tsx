@@ -1,9 +1,10 @@
 import React from "react";
 import type { Brand } from "../lib/types";
 import type { SceneProps } from "./shared";
-import { COLUMN, Headline, Kicker, Layout } from "./shared";
+import { Headline, Kicker, Layout } from "./shared";
 import { fontDisplay, fontMono, withAlpha } from "../lib/theme";
 import { useEnter, useProgress } from "../lib/motion";
+import { useLayout } from "../lib/context";
 
 const CompareRow: React.FC<{
   label: string;
@@ -11,9 +12,9 @@ const CompareRow: React.FC<{
   ratio: number;
   accent?: boolean;
   brand: Brand;
-  format: "short" | "long";
   delay: number;
-}> = ({ label, value, ratio, accent = false, brand, format, delay }) => {
+}> = ({ label, value, ratio, accent = false, brand, delay }) => {
+  const t = useLayout().scenes.compare;
   const enter = useEnter(delay);
   const grow = useProgress(delay, 0.7);
   return (
@@ -41,7 +42,7 @@ const CompareRow: React.FC<{
         <span
           style={{
             fontFamily: fontDisplay,
-            fontSize: format === "short" ? 64 : 52,
+            fontSize: t.value,
             fontWeight: 800,
             letterSpacing: -1.5,
             color: accent ? brand.colors.primary : brand.colors.fg,
@@ -74,11 +75,12 @@ const CompareRow: React.FC<{
   );
 };
 
-export const Compare: React.FC<SceneProps> = ({ scene, brand, format }) => {
+export const Compare: React.FC<SceneProps> = ({ scene, brand }) => {
+  const t = useLayout().scenes.compare;
   const items = scene.compare?.items ?? [];
   const noteEnter = useEnter(20);
   return (
-    <Layout format={format} align="left" vertical="center">
+    <Layout align="left" vertical="center">
       {scene.kicker ? (
         <Kicker brand={brand} delay={0}>
           {scene.kicker}
@@ -88,11 +90,11 @@ export const Compare: React.FC<SceneProps> = ({ scene, brand, format }) => {
         text={scene.onScreenText ?? scene.narration}
         emphasis={scene.emphasis}
         brand={brand}
-        size={format === "short" ? 54 : 46}
+        size={t.headline}
         delay={2}
         weight={700}
       />
-      <div style={{ width: format === "short" ? COLUMN : 1400, marginTop: 46 }}>
+      <div style={{ width: t.width, marginTop: 46 }}>
         {items.map((item, index) => (
           <CompareRow
             key={index}
@@ -101,7 +103,6 @@ export const Compare: React.FC<SceneProps> = ({ scene, brand, format }) => {
             ratio={item.ratio}
             accent={item.accent}
             brand={brand}
-            format={format}
             delay={7 + index * 6}
           />
         ))}

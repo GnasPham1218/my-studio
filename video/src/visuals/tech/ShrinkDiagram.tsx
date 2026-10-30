@@ -2,26 +2,37 @@ import React from "react";
 import type { Brand } from "../../lib/types";
 import { fontDisplay, fontMono, withAlpha } from "../../lib/theme";
 import { useEnter, useProgress } from "../../lib/motion";
+import { useLayout } from "../../lib/context";
 import { ChipIcon } from "../icons";
-import { WIDE } from "../layout";
 
-const ShrinkDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
-  brand,
-  delay = 6,
-}) => {
+export type ShrinkData = {
+  title: string;
+  rows: { label: string; ratio: number; accent?: boolean }[];
+  caption: string;
+};
+
+const ShrinkDiagram: React.FC<{
+  brand: Brand;
+  data: ShrinkData;
+  delay?: number;
+}> = ({ brand, data, delay = 6 }) => {
   const enter = useEnter(delay);
   const grow = useProgress(delay + 2, 0.9);
-  const rows = [
-    { label: "BERT · 110M", width: 1, color: withAlpha(brand.colors.fg, 0.3) },
-    { label: "DistilBERT · 66M", width: 0.6, color: withAlpha(brand.colors.fg, 0.5) },
-    { label: "MobileBERT · 25M", width: 0.23, color: brand.colors.primary },
-  ];
+  const { wide } = useLayout();
+  // Hàng thường nhạt dần theo thứ tự (0.3, 0.5, ...); hàng accent dùng màu chính.
+  let plain = 0;
+  const rows = data.rows.map((row) => ({
+    ...row,
+    color: row.accent
+      ? brand.colors.primary
+      : withAlpha(brand.colors.fg, 0.3 + 0.2 * plain++),
+  }));
 
   return (
     <div
       style={{
         ...enter,
-        width: WIDE,
+        width: wide,
         display: "flex",
         alignItems: "center",
         gap: 38,
@@ -37,7 +48,7 @@ const ShrinkDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
             marginBottom: 22,
           }}
         >
-          SỐ THAM SỐ
+          {data.title}
         </div>
         {rows.map((row) => (
           <div key={row.label} style={{ marginBottom: 30 }}>
@@ -54,7 +65,7 @@ const ShrinkDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
             >
               <span>{row.label}</span>
               <span style={{ color: row.color }}>
-                {Math.round(row.width * 100)}%
+                {Math.round(row.ratio * 100)}%
               </span>
             </div>
             <div
@@ -67,7 +78,7 @@ const ShrinkDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
             >
               <div
                 style={{
-                  width: `${row.width * 100 * grow}%`,
+                  width: `${row.ratio * 100 * grow}%`,
                   height: "100%",
                   borderRadius: 8,
                   backgroundColor: row.color,
@@ -83,7 +94,7 @@ const ShrinkDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
             color: withAlpha(brand.colors.fg, 0.55),
           }}
         >
-          nhỏ hơn, vẫn chạy được trên điện thoại
+          {data.caption}
         </div>
       </div>
       <div

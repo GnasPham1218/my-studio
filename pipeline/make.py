@@ -4,7 +4,7 @@ import argparse
 import sys
 import time
 
-from . import align, build, render, tts
+from . import align, build, capcut, config, paths, render, tts
 
 for _stream in (sys.stdout, sys.stderr):
     try:
@@ -34,7 +34,12 @@ def main(argv: list[str] | None = None) -> int:
         "TTS → align → build → render.",
     )
     parser.add_argument("--project-id", required=True)
-    parser.add_argument("--format", choices=["short", "long"], default="short")
+    parser.add_argument("--format", choices=config.format_ids(), default="short")
+    parser.add_argument(
+        "--aspect",
+        help="Khung hình, có thể nhiều giá trị cách nhau bằng dấu phẩy "
+        f"({', '.join(config.aspect_ids())}). Audio và căn thời gian dùng chung.",
+    )
     parser.add_argument("--provider", choices=["vieneu", "omnivoice"], help="Ghi đè engine TTS")
     parser.add_argument("--voice", help="[vieneu] Ghi đè giọng preset")
     parser.add_argument("--mode", choices=["auto", "design", "clone"], help="[omnivoice] Kiểu giọng")
@@ -47,6 +52,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--force-align", action="store_true")
     parser.add_argument("--skip-render", action="store_true")
     parser.add_argument(
+        "--template",
+        help="Ghi đè template của project (id trong config/templates)",
+    )
+    parser.add_argument(
         "--unapproved",
         action="store_true",
         help="Chạy nháp khi script chưa được duyệt (pipeline.review)",
@@ -54,18 +63,27 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--still", type=int, help="Render 1 frame PNG thay vì video")
     parser.add_argument("--preview", type=float, help="Chỉ render N giây đầu")
     parser.add_argument("--scale", type=float, default=1.0)
+    parser.add_argument(
+        "--capcut",
+        action="store_true",
+        help="Sau khi render, xuất thêm bộ file + draft CapCut (pipeline.capcut)",
+    )
     args = parser.parse_args(argv)
 
-    base: list[str] = ["--project-id", args.project_id]
-    if args.format:
-        base += ["--format", args.format]
+    base: list[str] = ["--project-id", args.project_id, "--format", args.format]
     # align không đọc nội dung script để hiển thị nên không cần cổng duyệt.
     gate = ["--unapproved"] if args.unapproved else []
+    template = ["--template", args.template] if args.template else []
+    requested = [item.strip() for item in (args.aspect or "").split(",") if item.strip()]
+    aspects = [
+        paths.resolve_aspect(args.project_id, args.format, item)
+        for item in requested or [None]
+    ]
 
     overall = time.perf_counter()
+    channel = paths.load_brand(args.project_id)["channel"]["name"]
     print(
-        f"DiveCode1218 · project '{args.project_id}'"
-        f"{f' · {args.format}' if args.format else ''}",
+        f"{channel} · project '{args.project_id}' · {args.format} · {', '.join(aspects)}",
         flush=True,
     )
 
@@ -99,9 +117,11 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     done("Align", started)
 
+    # Audio + căn thời gian dùng chung; chỉ build/render lặp lại theo từng khung hình.
     started = stage("Build props", 3)
-    if build.main(base + gate) != 0:
-        return 1
+    for aspect_id in aspects:
+        if build.main(base + gate + template + ["--aspect", aspect_id]) != 0:
+            return 1
     done("Build props", started)
 
     if args.skip_render:
@@ -109,20 +129,34 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     started = stage("Render", 4)
-    render_args: list[str] = ["--project-id", args.project_id]
-    if args.format:
-        render_args += ["--format", args.format]
-    if args.still is not None:
-        render_args += ["--still", str(args.still)]
-    if args.preview is not None:
-        render_args += ["--preview", str(args.preview)]
-    if args.scale != 1.0:
-        render_args += ["--scale", str(args.scale)]
-    code = render.main(render_args)
-    if code == 0:
-        done("Render", started)
-        print(f"\n★ Hoàn tất toàn bộ sau {time.perf_counter() - overall:.1f}s")
-    return code
+    for aspect_id in aspects:
+        render_args: list[str] = [
+            "--project-id",
+            args.project_id,
+            "--format",
+            args.format,
+            "--aspect",
+            aspect_id,
+        ]
+        if args.still is not None:
+            render_args += ["--still", str(args.still)]
+        if args.preview is not None:
+            render_args += ["--preview", str(args.preview)]
+        if args.scale != 1.0:
+            render_args += ["--scale", str(args.scale)]
+        code = render.main(render_args)
+        if code != 0:
+            return code
+        if args.capcut and args.still is None and args.preview is None:
+            code = capcut.main(
+                ["--project-id", args.project_id, "--format", args.format, "--aspect", aspect_id]
+                + gate
+            )
+            if code != 0:
+                return code
+    done("Render", started)
+    print(f"\n★ Hoàn tất toàn bộ sau {time.perf_counter() - overall:.1f}s")
+    return 0
 
 
 if __name__ == "__main__":

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "tech-explainer",
+  "label": "Tech Explainer",
+  "description": "Giải thích công nghệ bằng visual metaphor, chữ lớn, nhịp nhanh, nền tối.",
+  "background": {
+    "kind": "tech",
+    "defaultVariant": "calm",
+    "variants": {
+      "hook": "hero",
+      "outro": "hero",
+      "stat": "data",
+      "chart": "data",
+      "compare": "data"
+    }
+  },
+  "transition": {
+    "kind": "slide",
+    "sec": 0.35,
+    "byType": { "hook": "zoom", "punch": "zoom", "outro": "fade" }
+  }
+}

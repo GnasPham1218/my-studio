@@ -2,22 +2,32 @@ import React from "react";
 import type { Brand } from "../../lib/types";
 import { fontDisplay, fontMono, withAlpha } from "../../lib/theme";
 import { useEnter, useProgress } from "../../lib/motion";
-import { WIDE } from "../layout";
+import { useLayout } from "../../lib/context";
 
-const StorageBar: React.FC<{ brand: Brand; delay?: number }> = ({
-  brand,
-  delay = 8,
-}) => {
+export type StorageData = {
+  title: string;
+  beforeLabel: string;
+  afterLabel: string;
+  reductionPct: number;
+  caption: string;
+};
+
+const StorageBar: React.FC<{
+  brand: Brand;
+  data: StorageData;
+  delay?: number;
+}> = ({ brand, data, delay = 8 }) => {
   const enter = useEnter(delay);
   const shrink = useProgress(delay + 4, 1.2);
-  const remain = 100 - 69 * shrink;
+  const { wide } = useLayout();
+  const remain = 100 - data.reductionPct * shrink;
   const rows = [
-    { label: "fp16 · 3B", value: 100, color: withAlpha(brand.colors.fg, 0.32) },
-    { label: "4-bit · 3B", value: remain, color: brand.colors.primary },
+    { label: data.beforeLabel, value: 100, color: withAlpha(brand.colors.fg, 0.32) },
+    { label: data.afterLabel, value: remain, color: brand.colors.primary },
   ];
 
   return (
-    <div style={{ ...enter, width: WIDE }}>
+    <div style={{ ...enter, width: wide }}>
       <div
         style={{
           display: "flex",
@@ -30,8 +40,10 @@ const StorageBar: React.FC<{ brand: Brand; delay?: number }> = ({
           color: brand.colors.muted,
         }}
       >
-        <span>DUNG LƯỢNG MÔ HÌNH</span>
-        <span style={{ color: brand.colors.primary }}>−69%</span>
+        <span>{data.title}</span>
+        <span style={{ color: brand.colors.primary }}>
+          −{data.reductionPct}%
+        </span>
       </div>
       {rows.map((row, index) => (
         <div key={row.label} style={{ marginBottom: index === 0 ? 30 : 18 }}>
@@ -76,7 +88,7 @@ const StorageBar: React.FC<{ brand: Brand; delay?: number }> = ({
           color: withAlpha(brand.colors.fg, 0.55),
         }}
       >
-        cùng một mô hình, nhẹ hơn gần 2/3
+        {data.caption}
       </div>
     </div>
   );

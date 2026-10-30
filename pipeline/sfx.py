@@ -12,7 +12,7 @@ import shutil
 from pathlib import Path
 from typing import Any
 
-from . import paths
+from . import config, paths
 
 ASSET_DIR = paths.ROOT / "assets" / "sfx"
 CONFIG_PATH = paths.ROOT / "config" / "sfx.json"
@@ -55,7 +55,7 @@ def main(argv: list[str] | None = None) -> int:
         description="Chép SFX thật trong config/sfx.json vào project.",
     )
     parser.add_argument("--project-id", required=True)
-    parser.add_argument("--format", choices=["short", "long"], required=True)
+    parser.add_argument("--format", choices=config.format_ids(), required=True)
     args = parser.parse_args(argv)
 
     written = ensure_sfx(paths.audio_dir(args.project_id, args.format) / "sfx")

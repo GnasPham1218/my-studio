@@ -39,6 +39,8 @@ export type Scene = {
     sub?: string;
     /** Pose cho visual "stick": wave | point | think | write | cheer. */
     pose?: string;
+    /** Dữ liệu riêng của kind, đã gộp default ở pipeline.build (config/visuals.json). */
+    data?: Record<string, unknown>;
   };
   sfx?: string | null;
   sfxAtSec?: number;
@@ -59,18 +61,183 @@ export type Scene = {
   words: Word[];
 };
 
-export type SafeArea = { top: number; bottom: number; left: number; right: number };
-
 export type SfxItem = {
   file: string;
   durationSec: number;
   defaultVolume: number;
 };
 
+// ---------------------------------------------------------------- layout
+
+export type SafeArea = { top: number; bottom: number; left: number; right: number };
+
+/**
+ * Bố cục theo khung hình. Khớp từng khoá với config/aspects.json; pipeline.build
+ * copy nguyên khối của aspect được chọn vào props.layout. Component chỉ đọc
+ * khối này (qua useLayout), không bao giờ so sánh tên format hay aspect.
+ */
+export type Layout = {
+  aspect: string;
+  width: number;
+  height: number;
+  fps: number;
+  safeArea: SafeArea;
+  /** Vùng nội dung của scene. */
+  padding: { top: number; bottom: number; left: number; right: number };
+  /** Bề rộng cột nội dung mặc định. */
+  column: number;
+  /** Bề rộng chuẩn của một visual. */
+  wide: number;
+  /** Thu nhỏ visual khi khung không đủ cao (CSS zoom, ảnh hưởng cả layout). */
+  visualScale: number;
+  type: {
+    hero: number;
+    h1: number;
+    h2: number;
+    body: number;
+    small: number;
+    stat: number;
+    kicker: number;
+    gap: number;
+  };
+  scenes: {
+    hook: {
+      headline: number;
+      headlineWithPhone: number;
+      maxWidth: number;
+      tagline: number;
+      visualWidth: number;
+    };
+    punch: {
+      headline: number;
+      headlineWithVisual: number;
+      maxWidth: number;
+      visualWidth: number;
+    };
+    stat: {
+      value: number;
+      valueWithVisual: number;
+      unit: number;
+      unitWithVisual: number;
+      label: number;
+      labelWithVisual: number;
+      visualWidth: number;
+    };
+    list: {
+      headline: number;
+      maxWidth: number;
+      width: number;
+      rowPaddingY: number;
+      rowText: number;
+    };
+    chart: { headline: number; barAreaHeight: number };
+    compare: { headline: number; value: number; width: number };
+    timeline: {
+      headline: number;
+      width: number;
+      rowPaddingY: number;
+      rowText: number;
+    };
+    outro: { headline: number; maxWidth: number; visualWidth: number };
+  };
+  caption: {
+    fontSize: number;
+    fontSizePaper: number;
+    strokePx: number;
+    bottom: number;
+    boxHeight: number;
+    maxWidth: number;
+    sideMargin: number;
+    scrimHeight: number;
+    scrimHeightPaper: number;
+    maxWordsPerCard: number;
+    maxChars: number;
+    minCardSec: number;
+  };
+  chrome: {
+    watermark: { top: number; right: number; fontSize: number };
+    sceneIndex: { top: number; left: number };
+  };
+};
+
+// ---------------------------------------------------------------- template
+
+/** Tên màu trong palette hoặc mã hex. */
+export type ColorRef = string;
+
+export type BackgroundVariant = "hero" | "data" | "calm" | "glitch";
+
+/**
+ * Giao diện (look) đã gộp với config/templates/_base.json, khớp
+ * schemas/template.schema.json. Mọi trường đều có giá trị khi tới Remotion.
+ */
+export type Template = {
+  id: string;
+  label?: string;
+  background: {
+    kind: "tech" | "paper" | "solid" | "gradient";
+    defaultVariant: BackgroundVariant;
+    variants: Record<string, BackgroundVariant>;
+    gradient: { angle: number; stops: string[] };
+  };
+  caption: {
+    fontWeight: number;
+    letterSpacing: number;
+    uppercase: boolean;
+    textShadow: boolean;
+    textColor?: ColorRef;
+    stroke?: { px: number; color: ColorRef } | null;
+    highlight: { color: ColorRef | null; underline: ColorRef | null };
+    card: {
+      background?: ColorRef;
+      backgroundAlpha?: number;
+      border?: ColorRef;
+      borderAlpha?: number;
+      radius?: number;
+    } | null;
+    /** [[phần trăm từ đáy, alpha], ...]; rỗng = không có scrim. */
+    scrim: number[][];
+    holdGapSec: number;
+    fontSizeRel: number | null;
+    bottomRel: number | null;
+    maxWidthRel: number | null;
+  };
+  chrome: {
+    sceneIndex: boolean;
+    progress: boolean;
+    watermark: {
+      enabled: boolean;
+      glow: boolean;
+      uppercase: boolean;
+      letterSpacing: number;
+      opacity: number;
+    };
+  };
+  motion: { enterDistancePx: number; enterSec: number };
+  transition: {
+    kind: TransitionKind;
+    sec: number;
+    /** Ghi đè kind theo scene.type. */
+    byType: Record<string, TransitionKind>;
+  };
+};
+
+export type TransitionKind =
+  | "none"
+  | "fade"
+  | "slide"
+  | "push"
+  | "wipe"
+  | "zoom"
+  | "blur";
+
+// ---------------------------------------------------------------- props
+
 export type Props = {
+  /** Độ dài/loại nội dung của kịch bản (short | long). Không dùng để chọn bố cục. */
   format: "short" | "long";
-  /** ID trong video/src/styles; mặc định tech-explainer. */
-  styleId?: string;
+  /** Khung hình đã chọn (vertical | horizontal | square). */
+  aspect: string;
   audioDir: string;
   sfxDir?: string;
   sfxCatalog: Record<string, SfxItem>;
@@ -81,7 +248,10 @@ export type Props = {
   projectId: string;
   title: string;
   brand: Brand;
-  safeArea: SafeArea;
+  template: Template;
+  layout: Layout;
   scenes: Scene[];
   captions: CaptionCard[];
+  /** Xuất cho CapCut: bỏ chuyển cảnh, caption và audio (CapCut tự thêm). */
+  capcut?: boolean;
 };

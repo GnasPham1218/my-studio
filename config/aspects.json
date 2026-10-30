@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "description": "Bố cục theo KHUNG HÌNH. Là nguồn sự thật duy nhất cho kích thước, safe area, cỡ chữ và vị trí: pipeline.build copy khối của aspect được chọn vào props.layout, Remotion chỉ đọc props.layout và không bao giờ so sánh tên format. Thêm khung hình mới = thêm một khối cùng cấu trúc (tests/test_config.py kiểm cấu trúc).",
+  "aspects": {
+    "vertical": {
+      "label": "Dọc 9:16",
+      "ratio": "9:16",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "safeArea": { "top": 220, "bottom": 380, "left": 60, "right": 140 },
+      "padding": { "top": 236, "bottom": 470, "left": 90, "right": 90 },
+      "column": 900,
+      "wide": 860,
+      "visualScale": 1,
+      "type": { "hero": 118, "h1": 92, "h2": 68, "body": 44, "small": 32, "stat": 250, "kicker": 34, "gap": 28 },
+      "scenes": {
+        "hook": { "headline": 100, "headlineWithPhone": 92, "maxWidth": 840, "tagline": 31, "visualWidth": 860 },
+        "punch": { "headline": 92, "headlineWithVisual": 68, "maxWidth": 880, "visualWidth": 900 },
+        "stat": { "value": 232, "valueWithVisual": 156, "unit": 92, "unitWithVisual": 68, "label": 44, "labelWithVisual": 36, "visualWidth": 900 },
+        "list": { "headline": 54, "maxWidth": 860, "width": 900, "rowPaddingY": 32, "rowText": 48 },
+        "chart": { "headline": 54, "barAreaHeight": 380 },
+        "compare": { "headline": 54, "value": 64, "width": 900 },
+        "timeline": { "headline": 54, "width": 900, "rowPaddingY": 20, "rowText": 46 },
+        "outro": { "headline": 68, "maxWidth": 880, "visualWidth": 780 }
+      },
+      "caption": {
+        "fontSize": 52, "fontSizePaper": 54, "strokePx": 6,
+        "bottom": 300, "boxHeight": 214, "maxWidth": 920, "sideMargin": 64,
+        "scrimHeight": 620, "scrimHeightPaper": 560,
+        "maxWordsPerCard": 6, "maxChars": 62, "minCardSec": 0.9
+      },
+      "chrome": {
+        "watermark": { "top": 120, "right": 44, "fontSize": 24 },
+        "sceneIndex": { "top": 116, "left": 44 }
+      }
+    },
+    "horizontal": {
+      "label": "Ngang 16:9",
+      "ratio": "16:9",
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "safeArea": { "top": 80, "bottom": 120, "left": 120, "right": 120 },
+      "padding": { "top": 90, "bottom": 150, "left": 150, "right": 150 },
+      "column": 1400,
+      "wide": 860,
+      "visualScale": 1,
+      "type": { "hero": 104, "h1": 78, "h2": 56, "body": 36, "small": 26, "stat": 190, "kicker": 26, "gap": 24 },
+      "scenes": {
+        "hook": { "headline": 104, "headlineWithPhone": 104, "maxWidth": 1400, "tagline": 28, "visualWidth": 1200 },
+        "punch": { "headline": 78, "headlineWithVisual": 46, "maxWidth": 1400, "visualWidth": 900 },
+        "stat": { "value": 190, "valueWithVisual": 190, "unit": 64, "unitWithVisual": 64, "label": 34, "labelWithVisual": 34, "visualWidth": 900 },
+        "list": { "headline": 46, "maxWidth": 1400, "width": 1400, "rowPaddingY": 20, "rowText": 34 },
+        "chart": { "headline": 46, "barAreaHeight": 460 },
+        "compare": { "headline": 46, "value": 52, "width": 1400 },
+        "timeline": { "headline": 46, "width": 1400, "rowPaddingY": 14, "rowText": 32 },
+        "outro": { "headline": 62, "maxWidth": 1300, "visualWidth": 1000 }
+      },
+      "caption": {
+        "fontSize": 42, "fontSizePaper": 40, "strokePx": 4,
+        "bottom": 120, "boxHeight": 160, "maxWidth": 1400, "sideMargin": 120,
+        "scrimHeight": 300, "scrimHeightPaper": 280,
+        "maxWordsPerCard": 12, "maxChars": 84, "minCardSec": 0.9
+      },
+      "chrome": {
+        "watermark": { "top": 48, "right": 44, "fontSize": 20 },
+        "sceneIndex": { "top": 116, "left": 44 }
+      }
+    },
+    "square": {
+      "label": "Vuông 1:1",
+      "ratio": "1:1",
+      "status": "draft",
+      "width": 1080,
+      "height": 1080,
+      "fps": 30,
+      "safeArea": { "top": 90, "bottom": 150, "left": 70, "right": 70 },
+      "padding": { "top": 110, "bottom": 250, "left": 80, "right": 80 },
+      "column": 920,
+      "wide": 860,
+      "visualScale": 0.72,
+      "type": { "hero": 100, "h1": 78, "h2": 58, "body": 38, "small": 28, "stat": 200, "kicker": 30, "gap": 24 },
+      "scenes": {
+        "hook": { "headline": 68, "headlineWithPhone": 60, "maxWidth": 900, "tagline": 26, "visualWidth": 860 },
+        "punch": { "headline": 72, "headlineWithVisual": 50, "maxWidth": 920, "visualWidth": 920 },
+        "stat": { "value": 190, "valueWithVisual": 130, "unit": 76, "unitWithVisual": 56, "label": 38, "labelWithVisual": 32, "visualWidth": 920 },
+        "list": { "headline": 46, "maxWidth": 920, "width": 920, "rowPaddingY": 22, "rowText": 40 },
+        "chart": { "headline": 46, "barAreaHeight": 300 },
+        "compare": { "headline": 46, "value": 56, "width": 920 },
+        "timeline": { "headline": 46, "width": 920, "rowPaddingY": 14, "rowText": 38 },
+        "outro": { "headline": 58, "maxWidth": 900, "visualWidth": 780 }
+      },
+      "caption": {
+        "fontSize": 44, "fontSizePaper": 46, "strokePx": 5,
+        "bottom": 150, "boxHeight": 170, "maxWidth": 940, "sideMargin": 70,
+        "scrimHeight": 420, "scrimHeightPaper": 380,
+        "maxWordsPerCard": 8, "maxChars": 72, "minCardSec": 0.9
+      },
+      "chrome": {
+        "watermark": { "top": 50, "right": 44, "fontSize": 22 },
+        "sceneIndex": { "top": 56, "left": 44 }
+      }
+    }
+  }
+}

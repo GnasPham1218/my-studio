@@ -1,37 +1,3 @@
-export type Sizes = {
-  hero: number;
-  h1: number;
-  h2: number;
-  body: number;
-  small: number;
-  stat: number;
-  kicker: number;
-  gap: number;
-};
-
-export const sizes = (format: "short" | "long"): Sizes =>
-  format === "short"
-    ? {
-        hero: 118,
-        h1: 92,
-        h2: 68,
-        body: 44,
-        small: 32,
-        stat: 250,
-        kicker: 34,
-        gap: 28,
-      }
-    : {
-        hero: 104,
-        h1: 78,
-        h2: 56,
-        body: 36,
-        small: 26,
-        stat: 190,
-        kicker: 26,
-        gap: 24,
-      };
-
 // Brand có thể đổi font qua CSS variable trong ExplainerVideo.
 export const fontDisplay =
   'var(--font-display, "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif)';
@@ -65,3 +31,9 @@ export const hashSeed = (text: string) => {
   }
   return hash >>> 0;
 };
+
+/** Tên màu trong palette (primary, accent, ...) hoặc mã hex. */
+export const resolveColor = (
+  ref: string,
+  colors: Record<string, string>,
+): string => (ref.startsWith("#") ? ref : (colors[ref] ?? ref));

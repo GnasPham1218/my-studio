@@ -82,12 +82,15 @@ CHẤT LƯỢNG NỘI DUNG:
 - `emphasis`: 1–3 từ khoá mỗi scene, dùng để highlight khi render.
 - KHÔNG điền `voice` và `music`. Pipeline gắn hai trường này từ brand config;
   điền vào sẽ bị xoá và có thể sai.
-- `visual.kind`: với Tech Explainer, ưu tiên `phone`, `award`, `loop`, `shrink`,
-  `decline`, `storage`, `limits`, `question`; với Whiteboard/English, dùng
-  `stick` (`label` = câu trong bong bóng, `sub` = phiên âm/ghi chú, `pose` =
-  `wave|point|think|write|cheer`); dùng `chart` cho scene chart; `none` khi
-  không cần visual. Không dùng `generated`/`image` vì pipeline chỉ vẽ visual
-  procedural bằng code.
+- `visual`: đọc `config/visuals.json` (catalog) để biết kind nào có sẵn, khi nào
+  dùng và `visual.data` nhận những khoá nào. Kind ghi "BẮT BUỘC" phải có
+  `visual.data` với dữ liệu của chủ đề đang viết (giá trị mặc định chỉ là mẫu
+  trung tính như "Bản gốc/Bản nhỏ", không được để lọt vào video). Có thể bỏ
+  các khoá không cần đổi.
+  Whiteboard/English dùng `stick` (`label` = câu trong bong bóng, `sub` =
+  phiên âm/ghi chú, `pose` = `wave|point|think|write|cheer`); `chart` cho scene
+  chart; `none` khi không cần visual. Không dùng `generated`/`image` vì
+  pipeline chỉ vẽ visual procedural bằng code.
 
 TỰ KIỂM TRƯỚC KHI XUẤT:
 - File đã được ghi đúng đường dẫn `out=`.

@@ -1,26 +1,18 @@
 import React from "react";
 import type { SceneProps } from "./shared";
-import { COLUMN, Divider, Headline, Kicker, Layout } from "./shared";
-import { sizes } from "../lib/theme";
+import { Divider, Headline, Kicker, Layout } from "./shared";
+import { useLayout } from "../lib/context";
 import { Visual, hasVisual } from "../visuals";
 
-export const Punch: React.FC<SceneProps> = ({
-  scene,
-  brand,
-  format,
-  videoTitle,
-}) => {
+export const Punch: React.FC<SceneProps> = ({ scene, brand, videoTitle }) => {
+  const t = useLayout().scenes.punch;
   const visual = hasVisual(scene);
-  const size = format === "short" ? (visual ? 68 : 92) : visual ? 46 : sizes(format).h1;
+  const size = visual ? t.headlineWithVisual : t.headline;
   const text = scene.onScreenText ?? videoTitle;
   const quote = scene.type === "quote";
 
   return (
-    <Layout
-      format={format}
-      align="left"
-      vertical={visual ? "top" : "center"}
-    >
+    <Layout align="left" vertical={visual ? "top" : "center"}>
       {scene.kicker ? (
         <Kicker brand={brand} delay={0}>
           {scene.kicker}
@@ -31,7 +23,7 @@ export const Punch: React.FC<SceneProps> = ({
         emphasis={scene.emphasis}
         brand={brand}
         size={size}
-        maxWidth={format === "short" ? 880 : 1400}
+        maxWidth={t.maxWidth}
         delay={3}
         weight={quote ? 600 : 800}
       />
@@ -39,7 +31,7 @@ export const Punch: React.FC<SceneProps> = ({
       {visual ? (
         <div
           style={{
-            width: COLUMN,
+            width: t.visualWidth,
             flex: 1,
             display: "flex",
             alignItems: "center",
@@ -47,7 +39,7 @@ export const Punch: React.FC<SceneProps> = ({
             marginTop: 36,
           }}
         >
-          <Visual scene={scene} brand={brand} format={format} />
+          <Visual scene={scene} brand={brand} />
         </div>
       ) : null}
     </Layout>

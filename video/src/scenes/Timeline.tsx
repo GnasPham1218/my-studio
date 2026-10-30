@@ -1,18 +1,19 @@
 import React from "react";
 import type { Brand } from "../lib/types";
 import type { SceneProps } from "./shared";
-import { COLUMN, Headline, Kicker, Layout } from "./shared";
+import { Headline, Kicker, Layout } from "./shared";
 import { fontDisplay, fontMono, withAlpha } from "../lib/theme";
 import { useEnter } from "../lib/motion";
+import { useLayout } from "../lib/context";
 
 const TimelineRow: React.FC<{
   label: string;
   text: string;
   active?: boolean;
   brand: Brand;
-  format: "short" | "long";
   delay: number;
-}> = ({ label, text, active = false, brand, format, delay }) => {
+}> = ({ label, text, active = false, brand, delay }) => {
+  const t = useLayout().scenes.timeline;
   const enter = useEnter(delay);
   return (
     <div
@@ -21,7 +22,7 @@ const TimelineRow: React.FC<{
         display: "flex",
         alignItems: "flex-start",
         gap: 26,
-        padding: format === "short" ? "20px 0" : "14px 0",
+        padding: `${t.rowPaddingY}px 0`,
       }}
     >
       <span
@@ -56,7 +57,7 @@ const TimelineRow: React.FC<{
           style={{
             marginTop: 6,
             fontFamily: fontDisplay,
-            fontSize: format === "short" ? 46 : 32,
+            fontSize: t.rowText,
             fontWeight: active ? 700 : 600,
             lineHeight: 1.25,
             color: active
@@ -71,10 +72,11 @@ const TimelineRow: React.FC<{
   );
 };
 
-export const Timeline: React.FC<SceneProps> = ({ scene, brand, format }) => {
+export const Timeline: React.FC<SceneProps> = ({ scene, brand }) => {
+  const t = useLayout().scenes.timeline;
   const items = scene.timeline ?? [];
   return (
-    <Layout format={format} align="left" vertical="center">
+    <Layout align="left" vertical="center">
       {scene.kicker ? (
         <Kicker brand={brand} delay={0}>
           {scene.kicker}
@@ -84,14 +86,14 @@ export const Timeline: React.FC<SceneProps> = ({ scene, brand, format }) => {
         text={scene.onScreenText ?? scene.narration}
         emphasis={scene.emphasis}
         brand={brand}
-        size={format === "short" ? 54 : 46}
+        size={t.headline}
         delay={2}
         weight={700}
       />
       <div
         style={{
           position: "relative",
-          width: format === "short" ? COLUMN : 1400,
+          width: t.width,
           marginTop: 34,
         }}
       >
@@ -112,7 +114,6 @@ export const Timeline: React.FC<SceneProps> = ({ scene, brand, format }) => {
             text={item.text}
             active={item.active}
             brand={brand}
-            format={format}
             delay={6 + index * 5}
           />
         ))}

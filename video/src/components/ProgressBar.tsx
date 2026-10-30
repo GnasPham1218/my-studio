@@ -2,6 +2,7 @@ import React from "react";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 import type { Brand, Scene } from "../lib/types";
 import { withAlpha } from "../lib/theme";
+import { useLayout } from "../lib/context";
 
 /**
  * Thanh tiến độ độc lập với số scene.
@@ -16,6 +17,7 @@ export const ProgressBar: React.FC<{
 }> = ({ scenes, brand }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const place = useLayout().chrome.sceneIndex;
   const time = frame / fps;
   const last = scenes[scenes.length - 1];
   const total = last ? last.startSec + last.durationSec : 1;
@@ -25,8 +27,8 @@ export const ProgressBar: React.FC<{
     <div
       style={{
         position: "absolute",
-        top: 116,
-        left: 44,
+        top: place.top,
+        left: place.left,
         width: 140,
         height: 4,
         borderRadius: 2,

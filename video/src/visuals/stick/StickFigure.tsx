@@ -3,7 +3,7 @@ import { useCurrentFrame, useVideoConfig } from "remotion";
 import type { Brand, Scene } from "../../lib/types";
 import { fontDisplay, fontMono, withAlpha } from "../../lib/theme";
 import { useEnter } from "../../lib/motion";
-import { WIDE } from "../layout";
+import { useLayout } from "../../lib/context";
 
 type Pose = "wave" | "point" | "think" | "write" | "cheer";
 
@@ -37,6 +37,7 @@ export const StickFigure: React.FC<{
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const pose = poseFor(scene);
+  const { wide } = useLayout();
   const bubble = useEnter(7);
   const bob = Math.sin((frame / fps) * 2.1) * 3;
   const wave = Math.sin((frame / fps) * 5.2) * 9;
@@ -74,7 +75,7 @@ export const StickFigure: React.FC<{
   return (
     <div
       style={{
-        width: WIDE,
+        width: wide,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

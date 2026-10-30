@@ -1,17 +1,14 @@
 import React from "react";
 import type { SceneProps } from "./shared";
-import { COLUMN, Kicker, Layout, useCountUp } from "./shared";
-import { sizes, withAlpha } from "../lib/theme";
+import { Kicker, Layout, useCountUp } from "./shared";
+import { withAlpha } from "../lib/theme";
 import { fontDisplay, fontMono } from "../lib/theme";
 import { useEnter } from "../lib/motion";
+import { useLayout } from "../lib/context";
 import { Visual, hasVisual } from "../visuals";
 
-export const Stat: React.FC<SceneProps> = ({
-  scene,
-  brand,
-  format,
-  videoTitle,
-}) => {
+export const Stat: React.FC<SceneProps> = ({ scene, brand, videoTitle }) => {
+  const t = useLayout().scenes.stat;
   const fallback = scene.onScreenText ?? scene.narration ?? videoTitle;
   const match = fallback.match(
     /(\d+(?:[.,]\d+)?)\s*(%|bit|TOPS|GB|TB|ms|tỷ|triệu)?/i,
@@ -34,11 +31,7 @@ export const Stat: React.FC<SceneProps> = ({
   const noteEnter = useEnter(13);
 
   return (
-    <Layout
-      format={format}
-      align="center"
-      vertical={visual ? "top" : "center"}
-    >
+    <Layout align="center" vertical={visual ? "top" : "center"}>
       {scene.kicker ? (
         <Kicker brand={brand} align="center" delay={0}>
           {scene.kicker}
@@ -56,7 +49,7 @@ export const Stat: React.FC<SceneProps> = ({
         <span
           style={{
             fontFamily: fontDisplay,
-            fontSize: format === "short" ? (visual ? 156 : 232) : sizes(format).stat,
+            fontSize: visual ? t.valueWithVisual : t.value,
             fontWeight: 800,
             lineHeight: 0.95,
             letterSpacing: -8,
@@ -69,7 +62,7 @@ export const Stat: React.FC<SceneProps> = ({
           <span
             style={{
               fontFamily: fontDisplay,
-              fontSize: format === "short" ? (visual ? 68 : 92) : 64,
+              fontSize: visual ? t.unitWithVisual : t.unit,
               fontWeight: 700,
               lineHeight: 1,
               marginTop: 18,
@@ -86,7 +79,7 @@ export const Stat: React.FC<SceneProps> = ({
           marginTop: 18,
           maxWidth: 780,
           fontFamily: fontDisplay,
-          fontSize: format === "short" ? (visual ? 36 : 44) : 34,
+          fontSize: visual ? t.labelWithVisual : t.label,
           fontWeight: 600,
           lineHeight: 1.3,
           color: withAlpha(brand.colors.fg, 0.9),
@@ -111,7 +104,7 @@ export const Stat: React.FC<SceneProps> = ({
       {visual ? (
         <div
           style={{
-            width: COLUMN,
+            width: t.visualWidth,
             flex: 1,
             display: "flex",
             alignItems: "center",
@@ -119,7 +112,7 @@ export const Stat: React.FC<SceneProps> = ({
             marginTop: 28,
           }}
         >
-          <Visual scene={scene} brand={brand} format={format} />
+          <Visual scene={scene} brand={brand} />
         </div>
       ) : null}
     </Layout>

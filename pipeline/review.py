@@ -26,7 +26,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from . import llm, paths, validate
+from . import config, llm, paths, validate
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -444,7 +444,7 @@ def main(argv: list[str] | None = None) -> int:
         description="Xem, fact-check và duyệt kịch bản trước khi sản xuất.",
     )
     parser.add_argument("--project-id", required=True)
-    parser.add_argument("--format", choices=["short", "long"])
+    parser.add_argument("--format", choices=config.format_ids())
     action = parser.add_mutually_exclusive_group()
     action.add_argument("--factcheck", action="store_true", help="Chạy agent fact-check rồi báo cáo")
     action.add_argument("--approve", action="store_true", help="Duyệt phiên bản script hiện tại")

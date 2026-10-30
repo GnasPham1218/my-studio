@@ -1,20 +1,15 @@
 import React, { useMemo } from "react";
 import { AbsoluteFill, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import type { Brand, SafeArea, Scene } from "../lib/types";
+import type { Brand, Scene } from "../lib/types";
 import { fontDisplay, fontMono, withAlpha } from "../lib/theme";
 import { useEnter, useProgress } from "../lib/motion";
+import { useLayout } from "../lib/context";
 
 export type SceneProps = {
   scene: Scene;
   brand: Brand;
-  format: "short" | "long";
-  safeArea: SafeArea;
   videoTitle: string;
 };
-
-// Một trục dọc duy nhất cho mọi scene:
-// header ~13%, nội dung 25–70%, caption 78–88%.
-export const COLUMN = 900;
 
 const normalize = (value: string) =>
   value
@@ -22,12 +17,17 @@ const normalize = (value: string) =>
     .normalize("NFC")
     .replace(/[^\p{L}\p{N}%]+/gu, "");
 
+/**
+ * Khung chung của mọi scene. Một trục duy nhất theo layout.padding:
+ * header ở trên, nội dung ở giữa, chừa chỗ cho caption ở dưới.
+ */
 export const Layout: React.FC<{
-  format: "short" | "long";
   align?: "left" | "center";
   vertical?: "top" | "center" | "bottom";
   children: React.ReactNode;
-}> = ({ format, align = "left", vertical = "top", children }) => (
+}> = ({ align = "left", vertical = "top", children }) => {
+  const { padding } = useLayout();
+  return (
   <AbsoluteFill
     style={{
       display: "flex",
@@ -40,15 +40,16 @@ export const Layout: React.FC<{
             : "flex-start",
       alignItems: align === "center" ? "center" : "flex-start",
       textAlign: align === "center" ? "center" : "left",
-      paddingTop: format === "short" ? 236 : 90,
-      paddingBottom: format === "short" ? 470 : 150,
-      paddingLeft: format === "short" ? 90 : 150,
-      paddingRight: format === "short" ? 90 : 150,
+      paddingTop: padding.top,
+      paddingBottom: padding.bottom,
+      paddingLeft: padding.left,
+      paddingRight: padding.right,
     }}
   >
     {children}
   </AbsoluteFill>
-);
+  );
+};
 
 export const Kicker: React.FC<{
   children: React.ReactNode;
@@ -107,11 +108,12 @@ export const Headline: React.FC<{
   brand,
   size,
   align = "left",
-  maxWidth = COLUMN,
+  maxWidth,
   delay = 0,
   weight = 800,
 }) => {
   const enter = useEnter(delay);
+  const layout = useLayout();
   const words = useMemo(() => text.split(" "), [text]);
   const keys = useMemo(() => {
     const set = new Set<string>();
@@ -135,7 +137,7 @@ export const Headline: React.FC<{
         lineHeight: 1.14,
         letterSpacing: -1.5,
         color: brand.colors.fg,
-        maxWidth,
+        maxWidth: maxWidth ?? layout.column,
         textAlign: align,
       }}
     >
