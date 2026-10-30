@@ -9,3 +9,9 @@ tools/voice/out/
 .remotion/
 assets/sfx/candidates/
 references/
+
+# Video/ảnh render ra là output sinh lại được: chỉ đưa code lên git.
+*.mp4
+*.mov
+*.webm
+*.thumbnail.jpg

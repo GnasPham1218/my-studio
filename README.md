@@ -1,7 +1,11 @@
 # my-studio — pipeline video tự động cho nhiều kênh (DiveCode1218, EnglishLearner1218)
 
-Research → kịch bản → voiceover → phụ đề → render MP4. Chạy hoàn toàn local,
-không API trả phí, không LLM local (việc viết do OpenCode agent đảm nhiệm).
+Research → kịch bản → voiceover → phụ đề → render MP4 + thumbnail → (tuỳ chọn)
+dự án CapCut. Chạy hoàn toàn local, không API trả phí, không LLM local (việc
+viết do OpenCode agent đảm nhiệm).
+
+> **Người làm video:** đọc [Hướng dẫn sử dụng](docs/HUONG-DAN.md) — từng bước từ
+> chủ đề tới video, thumbnail và dự án CapCut.
 
 ## Kiến trúc
 
@@ -359,6 +363,9 @@ out/<projectId>/
     short/horizontal/  props.json
   05-video/                          # bước 5 — sản phẩm cuối: <format>-<aspect>.mp4
     short-vertical.mp4  short-horizontal.mp4  long-horizontal.mp4
+    short-vertical.thumbnail.jpg     # ảnh bìa (render --thumbnail, make tự tạo)
+  06-capcut/                         # tuỳ chọn — pipeline.capcut
+    short-vertical/  scenes/ audio/ audio.wav captions.srt thumbnail.jpg draft/
   99-logs/                           # log/ảnh debug, xoá được
     brief.txt  repair.txt  invalid.json
     attempts/  stills/

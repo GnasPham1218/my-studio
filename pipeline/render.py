@@ -48,6 +48,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--still", type=int, help="Chỉ render 1 frame ra PNG")
     parser.add_argument("--preview", type=float, help="Chỉ render N giây đầu")
     parser.add_argument(
+        "--thumbnail",
+        action="store_true",
+        help="Chỉ render ảnh bìa <format>-<aspect>.thumbnail.jpg",
+    )
+    parser.add_argument(
         "--capcut",
         action="store_true",
         help="Render clip từng cảnh + audio.wav cho CapCut (dùng qua pipeline.capcut)",
@@ -95,7 +100,9 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("Không tìm thấy node trong PATH.")
 
     # Đích của lần render này: PNG cho --still, MP4 cho video/preview.
-    if args.capcut:
+    if args.thumbnail:
+        output = paths.thumbnail_path(pid, fmt, aspect_id)
+    elif args.capcut:
         output = paths.capcut_dir(pid, fmt, aspect_id)
     elif args.still is not None:
         output = paths.still_path(pid, fmt, aspect_id, args.still)
@@ -112,7 +119,12 @@ def main(argv: list[str] | None = None) -> int:
         "--props",
         str(props_file),
     ]
-    command += ["--capcut", str(output)] if args.capcut else ["--out", str(output)]
+    if args.thumbnail:
+        command += ["--thumbnail", str(output)]
+    elif args.capcut:
+        command += ["--capcut", str(output)]
+    else:
+        command += ["--out", str(output)]
     if args.still is not None:
         command += ["--still", str(args.still)]
     if args.preview is not None:
@@ -127,8 +139,13 @@ def main(argv: list[str] | None = None) -> int:
     print("$ " + " ".join(command))
 
     # Ảnh tĩnh: không có tiến trình để theo dõi.
-    if args.still is not None:
-        return subprocess.run(command, cwd=ROOT).returncode
+    if args.still is not None or args.thumbnail:
+        code = subprocess.run(command, cwd=ROOT).returncode
+        if code == 0 and args.thumbnail:
+            paths.update_status(
+                pid, thumbnail={f"{fmt}-{aspect_id}": paths.rel(output)}
+            )
+        return code
 
     frames, fps = total_frames(props_file)
     if args.preview is not None:

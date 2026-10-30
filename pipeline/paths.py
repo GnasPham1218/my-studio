@@ -18,6 +18,7 @@ out/<projectId>/                   # OUTPUT — xoá/render lại được bất
   03-captions/short/vertical/  captions.srt  captions.ass
   04-props/short/vertical/  props.json
   05-video/  short-vertical.mp4             # <format>-<aspect>.mp4
+             short-vertical.thumbnail.jpg   # ảnh bìa (render --thumbnail)
   06-capcut/short-vertical/  scenes/ audio/ captions.srt draft/   # pipeline.capcut
   99-logs/  brief.txt  repair.txt  stills/
 ```
@@ -259,6 +260,11 @@ def video_dir(project_id: str) -> Path:
 
 def video_path(project_id: str, fmt: str, aspect: str) -> Path:
     return video_dir(project_id) / f"{fmt}-{aspect}.mp4"
+
+
+def thumbnail_path(project_id: str, fmt: str, aspect: str) -> Path:
+    """Ảnh bìa cùng khung hình với video: <format>-<aspect>.thumbnail.jpg."""
+    return video_dir(project_id) / f"{fmt}-{aspect}.thumbnail.jpg"
 
 
 def preview_path(project_id: str, fmt: str, aspect: str, seconds: float) -> Path:

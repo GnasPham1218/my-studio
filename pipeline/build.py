@@ -166,6 +166,11 @@ def compose(
         "scenes": scenes,
         "captions": captions.cards_to_json(cards),
     }
+    # Chữ trên thumbnail nằm trong project.json (không thuộc script nên sửa
+    # không làm mất phê duyệt). Thiếu thì Remotion dùng title + emphasis của hook.
+    thumbnail = paths.read_project(pid).get("thumbnail")
+    if thumbnail:
+        props["thumbnail"] = thumbnail
     return Composed(props, cards, layout, brand, template)
 
 

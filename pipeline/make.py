@@ -147,7 +147,16 @@ def main(argv: list[str] | None = None) -> int:
         code = render.main(render_args)
         if code != 0:
             return code
-        if args.capcut and args.still is None and args.preview is None:
+        full = args.still is None and args.preview is None
+        if full:
+            # Ảnh bìa đi kèm mỗi video, cùng khung hình.
+            code = render.main(
+                ["--project-id", args.project_id, "--format", args.format,
+                 "--aspect", aspect_id, "--thumbnail"]
+            )
+            if code != 0:
+                return code
+        if args.capcut and full:
             code = capcut.main(
                 ["--project-id", args.project_id, "--format", args.format, "--aspect", aspect_id]
                 + gate

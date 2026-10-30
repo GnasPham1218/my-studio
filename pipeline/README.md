@@ -8,7 +8,8 @@ python -m pipeline.tts    --project-id <id> --format short
 python -m pipeline.align  --project-id <id> --format short
 python -m pipeline.build  --project-id <id> --format short
 python -m pipeline.render --project-id <id> --format short --aspect vertical
-# hoặc tất cả (nhiều khung hình dùng chung audio):
+python -m pipeline.render --project-id <id> --format short --thumbnail   # chỉ ảnh bìa
+# hoặc tất cả (make tự render thêm thumbnail) (nhiều khung hình dùng chung audio):
 python -m pipeline.make   --project-id <id> --format short --aspect vertical,horizontal
 # xuất clip từng cảnh + audio + phụ đề + draft để chỉnh tiếp trong CapCut:
 python -m pipeline.capcut --project-id <id> --format short --aspect vertical

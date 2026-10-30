@@ -42,6 +42,9 @@ if (capcutDir) {
   props.capcut = true;
 }
 const stillFrame = flag("still");
+// --thumbnail <file.png|jpg>: chụp composition Thumbnail thay vì render video.
+const thumbnailOut = flag("thumbnail");
+const THUMBNAIL_FRAME = 59; // khớp THUMBNAIL_FRAME trong src/compositions/Thumbnail.tsx
 const previewSeconds = flag("preview");
 const scale = Number(flag("scale") ?? 1);
 const concurrency = flag("concurrency")
@@ -65,7 +68,7 @@ const serveUrl = await bundle({
 
 const composition = await selectComposition({
   serveUrl,
-  id: "DiveCode",
+  id: thumbnailOut ? "Thumbnail" : "DiveCode",
   inputProps: props,
   ...browserOption,
   logLevel,
@@ -75,7 +78,21 @@ console.log(
   `Composition: ${composition.durationInFrames} frames @ ${composition.fps}fps`,
 );
 
-if (capcutDir) {
+if (thumbnailOut) {
+  fs.mkdirSync(path.dirname(thumbnailOut), { recursive: true });
+  await renderStill({
+    composition,
+    serveUrl,
+    output: thumbnailOut,
+    frame: THUMBNAIL_FRAME,
+    inputProps: props,
+    imageFormat: thumbnailOut.toLowerCase().endsWith(".png") ? "png" : "jpeg",
+    jpegQuality: 92,
+    ...browserOption,
+    logLevel,
+  });
+  console.log(`\n✓ ${thumbnailOut}`);
+} else if (capcutDir) {
   const scenesDir = path.join(capcutDir, "scenes");
   fs.mkdirSync(scenesDir, { recursive: true });
   const fps = composition.fps;

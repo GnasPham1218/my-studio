@@ -876,6 +876,9 @@ def main(argv: list[str] | None = None) -> int:
     srt = paths.cards_dir(pid, fmt, aspect_id) / "captions.srt"
     if srt.exists():
         shutil.copy2(srt, kit / "captions.srt")
+    thumbnail = paths.thumbnail_path(pid, fmt, aspect_id)
+    if thumbnail.exists():
+        shutil.copy2(thumbnail, kit / "thumbnail.jpg")
 
     name = args.name or f"{pid}-{fmt}-{aspect_id}"
     content = build_draft(props, kit)
