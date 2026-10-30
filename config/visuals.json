@@ -1,0 +1,247 @@
+{
+  "version": 2,
+  "description": "Catalog visual vẽ bằng code. Nguồn sự thật cho: kind hợp lệ, schema của visual.data và giá trị mặc định. pipeline.build gộp defaults vào scene.visual.data nên Remotion không chứa dữ liệu nào. `defaults` chỉ là MẪU TRUNG TÍNH để component luôn có đủ trường; kind nào mang nội dung (requireData: true) bắt buộc kịch bản khai báo visual.data riêng, nếu không validate báo lỗi. Thêm visual mới: (1) component trong video/src/visuals, (2) đăng ký trong video/src/visuals/registry.tsx (tsc báo lỗi nếu quên), (3) khai báo ở đây. Chạy `python -m pipeline.visuals --list` để xem bảng tóm tắt.",
+  "passthrough": ["none", "logo", "image", "video", "chart", "screenRecording", "generated"],
+  "kinds": {
+    "phone": {
+      "summary": "Điện thoại mô phỏng với chip AI; nhãn lớn ở giữa.",
+      "useFor": "Mở đầu/hook về AI trên thiết bị. visual.label = chữ lớn (ví dụ năm), visual.sub = ghi chú nhỏ.",
+      "usesLabel": true,
+      "requireData": false,
+      "dataSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "badge": { "type": "string", "maxLength": 24 } }
+      },
+      "defaults": { "badge": "ON-DEVICE" }
+    },
+    "award": {
+      "summary": "Thẻ bảng xếp hạng/giải thưởng với danh sách mục, một mục được làm nổi bật.",
+      "useFor": "Trích dẫn một danh sách có thứ hạng từ nguồn uy tín. visual.label = năm hiển thị góc phải.",
+      "usesLabel": true,
+      "requireData": true,
+      "dataSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "publisher": { "type": "string", "maxLength": 40 },
+          "title": { "type": "string", "maxLength": 60 },
+          "rows": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 4,
+            "items": {
+              "type": "object",
+              "required": ["label"],
+              "additionalProperties": false,
+              "properties": {
+                "label": { "type": "string", "maxLength": 40 },
+                "active": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      },
+      "defaults": {
+        "publisher": "NGUỒN",
+        "title": "Danh sách xếp hạng",
+        "rows": [
+          { "label": "Mục thứ nhất", "active": false },
+          { "label": "Mục nổi bật", "active": true },
+          { "label": "Mục thứ ba", "active": false }
+        ]
+      }
+    },
+    "loop": {
+      "summary": "Hai nút nối bằng vòng lặp hai chiều.",
+      "useFor": "Lịch sử lặp lại, quay về điểm xuất phát (A rồi B rồi quay lại A).",
+      "requireData": true,
+      "dataSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nodes": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "object",
+              "required": ["title", "sub"],
+              "additionalProperties": false,
+              "properties": {
+                "title": { "type": "string", "maxLength": 12 },
+                "sub": { "type": "string", "maxLength": 24 }
+              }
+            }
+          },
+          "caption": { "type": "string", "maxLength": 24 }
+        }
+      },
+      "defaults": {
+        "nodes": [
+          { "title": "A", "sub": "Điểm xuất phát" },
+          { "title": "B", "sub": "Điểm quay lại" }
+        ],
+        "caption": "VÒNG LẶP"
+      }
+    },
+    "shrink": {
+      "summary": "Các thanh nhỏ dần cạnh một thiết bị có chip.",
+      "useFor": "So sánh kích thước nhiều phiên bản (cái cuối nhỏ nhất, accent). ratio 0..1 so với thanh lớn nhất.",
+      "requireData": true,
+      "dataSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string", "maxLength": 30 },
+          "rows": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 4,
+            "items": {
+              "type": "object",
+              "required": ["label", "ratio"],
+              "additionalProperties": false,
+              "properties": {
+                "label": { "type": "string", "maxLength": 30 },
+                "ratio": { "type": "number", "minimum": 0, "maximum": 1 },
+                "accent": { "type": "boolean" }
+              }
+            }
+          },
+          "caption": { "type": "string", "maxLength": 60 }
+        }
+      },
+      "defaults": {
+        "title": "KÍCH THƯỚC",
+        "rows": [
+          { "label": "Bản gốc", "ratio": 1 },
+          { "label": "Bản vừa", "ratio": 0.6 },
+          { "label": "Bản nhỏ", "ratio": 0.25, "accent": true }
+        ],
+        "caption": "nhỏ hơn nhưng vẫn dùng được"
+      }
+    },
+    "decline": {
+      "summary": "Đường biểu đồ tăng rồi giảm, có điểm cuối được gắn nhãn.",
+      "useFor": "Xu hướng kỳ vọng/đầu tư lên rồi hạ nhiệt. values 0..100 trải đều theo trục thời gian.",
+      "requireData": true,
+      "dataSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string", "maxLength": 30 },
+          "values": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 12,
+            "items": { "type": "number", "minimum": 0, "maximum": 100 }
+          },
+          "endLabel": { "type": "string", "maxLength": 12 }
+        }
+      },
+      "defaults": {
+        "title": "XU HƯỚNG",
+        "values": [30, 50, 70, 90, 100, 90, 80],
+        "endLabel": "Nay"
+      }
+    },
+    "storage": {
+      "summary": "Hai thanh dung lượng trước/sau khi nén, thanh sau co lại.",
+      "useFor": "Lượng tử hoá/nén: một mô hình, nhẹ đi X%.",
+      "requireData": true,
+      "dataSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string", "maxLength": 30 },
+          "beforeLabel": { "type": "string", "maxLength": 24 },
+          "afterLabel": { "type": "string", "maxLength": 24 },
+          "reductionPct": { "type": "number", "minimum": 1, "maximum": 99 },
+          "caption": { "type": "string", "maxLength": 60 }
+        }
+      },
+      "defaults": {
+        "title": "DUNG LƯỢNG",
+        "beforeLabel": "Trước",
+        "afterLabel": "Sau",
+        "reductionPct": 50,
+        "caption": "cùng nội dung, nhẹ hơn một nửa"
+      }
+    },
+    "limits": {
+      "summary": "Các thanh tiến độ còn thiếu, kèm ghi chú phần còn lại cần cloud.",
+      "useFor": "Giới hạn năng lực: mỗi hàng là một khả năng, value 0..1 là mức đạt được.",
+      "requireData": true,
+      "dataSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "rows": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4,
+            "items": {
+              "type": "object",
+              "required": ["label", "value"],
+              "additionalProperties": false,
+              "properties": {
+                "label": { "type": "string", "maxLength": 40 },
+                "value": { "type": "number", "minimum": 0, "maximum": 1 }
+              }
+            }
+          },
+          "badge": { "type": "string", "maxLength": 16 },
+          "footer": { "type": "string", "maxLength": 40 }
+        }
+      },
+      "defaults": {
+        "rows": [
+          { "label": "Khả năng thứ nhất", "value": 0.5 },
+          { "label": "Khả năng thứ hai", "value": 0.3 }
+        ],
+        "badge": "ĐẠT",
+        "footer": "PHẦN CÒN LẠI"
+      }
+    },
+    "question": {
+      "summary": "Hai khung đối lập với dấu hỏi ở giữa.",
+      "useFor": "Câu hỏi chọn A hay B; icon: phone | cloud.",
+      "requireData": true,
+      "dataSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "left": { "$ref": "#/$defs/panel" },
+          "right": { "$ref": "#/$defs/panel" },
+          "mark": { "type": "string", "maxLength": 2 }
+        },
+        "$defs": {
+          "panel": {
+            "type": "object",
+            "required": ["title", "sub"],
+            "additionalProperties": false,
+            "properties": {
+              "title": { "type": "string", "maxLength": 14 },
+              "sub": { "type": "string", "maxLength": 40 },
+              "icon": { "enum": ["phone", "cloud"] }
+            }
+          }
+        }
+      },
+      "defaults": {
+        "left": { "title": "A", "sub": "Lựa chọn thứ nhất", "icon": "phone" },
+        "right": { "title": "B", "sub": "Lựa chọn thứ hai", "icon": "cloud" },
+        "mark": "?"
+      }
+    },
+    "stick": {
+      "summary": "Nhân vật que có bong bóng thoại (template whiteboard).",
+      "useFor": "Bài giảng. visual.label = câu trong bong bóng, visual.sub = ghi chú/phiên âm, visual.pose = wave|point|think|write|cheer.",
+      "usesLabel": true,
+      "requireData": false,
+      "dataSchema": { "type": "object", "additionalProperties": false, "properties": {} },
+      "defaults": {}
+    }
+  }
+}

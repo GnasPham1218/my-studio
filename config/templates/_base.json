@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "_base",
+  "label": "Base",
+  "description": "Giá trị mặc định cho mọi template. Template khác chỉ cần khai báo phần khác biệt; pipeline.build gộp (deep merge) lên file này rồi ghi bản đầy đủ vào props.template.",
+  "colors": {},
+  "fonts": {},
+  "background": {
+    "kind": "tech",
+    "defaultVariant": "calm",
+    "variants": {},
+    "gradient": { "angle": 165, "stops": [] }
+  },
+  "caption": {
+    "fontWeight": 600,
+    "letterSpacing": -0.2,
+    "uppercase": false,
+    "textShadow": true,
+    "highlight": { "color": "primary", "underline": null },
+    "card": null,
+    "scrim": [[0, 0.94], [30, 0.72], [100, 0]],
+    "holdGapSec": 0,
+    "fontSizeRel": null,
+    "bottomRel": null,
+    "maxWidthRel": null
+  },
+  "chrome": {
+    "sceneIndex": true,
+    "progress": false,
+    "watermark": {
+      "enabled": true,
+      "glow": true,
+      "uppercase": true,
+      "letterSpacing": 3,
+      "opacity": 0.62
+    }
+  },
+  "motion": { "enterDistancePx": 14, "enterSec": 0.5 },
+  "transition": { "kind": "fade", "sec": 0.4, "byType": {} }
+}

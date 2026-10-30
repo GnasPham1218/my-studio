@@ -1,9 +1,9 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
-import type { Brand } from "../lib/types";
+import type { BackgroundVariant, Brand } from "../lib/types";
 import { hashSeed, withAlpha } from "../lib/theme";
 
-type Variant = "hero" | "data" | "calm" | "glitch";
+type Variant = BackgroundVariant;
 
 /**
  * Nền tĩnh, chỉ có một quầng sáng "thở" rất chậm.

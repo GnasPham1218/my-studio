@@ -1,7 +1,11 @@
 # my-studio — pipeline video tự động cho nhiều kênh (DiveCode1218, EnglishLearner1218)
 
-Research → kịch bản → voiceover → phụ đề → render MP4. Chạy hoàn toàn local,
-không API trả phí, không LLM local (việc viết do OpenCode agent đảm nhiệm).
+Research → kịch bản → voiceover → phụ đề → render MP4 + thumbnail → (tuỳ chọn)
+dự án CapCut. Chạy hoàn toàn local, không API trả phí, không LLM local (việc
+viết do OpenCode agent đảm nhiệm).
+
+> **Người làm video:** đọc [Hướng dẫn sử dụng](docs/HUONG-DAN.md) — từng bước từ
+> chủ đề tới video, thumbnail và dự án CapCut.
 
 ## Kiến trúc
 
@@ -16,14 +20,15 @@ shortener    ──┘   *.json    pipeline/align.py ──┼──► props.js
 
 - **Python điều phối toàn bộ.** Node/Remotion chỉ là worker render, gọi qua
   `node video/render.mjs <outDir> --props <props.json> --out <mp4>`.
-- Hợp đồng giữa hai bên là `04-props/<format>/props.json` (type ở
+- Hợp đồng giữa hai bên là `04-props/<format>/<aspect>/props.json` (type ở
   `video/src/lib/types.ts`). Remotion không chứa business logic.
 - **`projects/` là source** (research, script, style, metadata); **`out/` là
   output** (audio, caption, props, video, log) và có thể xoá/render lại.
 - Agent ghi kết quả **ra file** (đường dẫn trong prompt), Python đọc file — không
   parse JSON từ chat.
 - Mọi đường dẫn do `pipeline/paths.py` quy định; không module nào tự ghép chuỗi.
-- Style trình bày nằm ở `video/src/styles/`, scene ở `video/src/scenes/`, visual
+- Giao diện nằm ở `config/templates/*.json`, bố cục theo khung hình ở
+  `config/aspects.json`, scene ở `video/src/scenes/`, visual
   metaphor ở `video/src/visuals/`. Thêm loại video mới = thêm style/scene/visual,
   không sửa pipeline Python.
 
@@ -52,10 +57,17 @@ cd video; npm install; cd ..
 
 ## Quy trình
 
-> **Hiện tại kênh chỉ sản xuất short dọc 9:16.** `pipeline.make` mặc định
-> `--format short` (không cần truyền), và output chỉ có `02-audio/short`,
-> `03-captions/short`, `04-props/short`, `05-video/short.mp4`. Format long vẫn
-> dùng được khi cần bằng `--format long`.
+> **format** (`short`/`long`) là độ dài + luật nội dung; **aspect**
+> (`vertical`/`horizontal`/`square`) là khung hình. Mặc định short → dọc 9:16,
+> long → ngang 16:9. Một kịch bản render được nhiều khung hình mà không đọc lại
+> giọng:
+>
+> ```powershell
+> python -m pipeline.make --project-id ai-nho-tren-may --format short --aspect vertical,horizontal
+> ```
+>
+> Output: `05-video/short-vertical.mp4`, `05-video/short-horizontal.mp4`.
+> Đổi giao diện không cần sửa project: thêm `--template <id>`.
 
 ### 1. Research + kịch bản (agent)
 
@@ -125,7 +137,7 @@ Xem nhanh giao diện mà không render cả video:
 
 ```powershell
 python -m pipeline.render --project-id ai-nho-tren-may --format short `
-    --still 207 --scale 0.5
+    --aspect horizontal --still 207 --scale 0.5
 python -m pipeline.render --project-id ai-nho-tren-may --format short --preview 5
 ```
 
@@ -343,13 +355,17 @@ out/<projectId>/
     short/  manifest.json  s01.wav …  sfx/tick.wav
     long/   manifest.json  s01.wav …
   03-captions/                       # bước 3 — căn thời gian + phụ đề
-    short/  words.json  captions.srt  captions.ass
+    short/  words.json               # dùng chung mọi khung hình
+    short/vertical/  captions.srt  captions.ass     # chia card theo khung hình
     long/   …
   04-props/                          # bước 4 — dữ liệu cho Remotion
-    short/  props.json
-    long/   props.json
-  05-video/                          # bước 5 — sản phẩm cuối
-    short.mp4  long.mp4
+    short/vertical/  props.json
+    short/horizontal/  props.json
+  05-video/                          # bước 5 — sản phẩm cuối: <format>-<aspect>.mp4
+    short-vertical.mp4  short-horizontal.mp4  long-horizontal.mp4
+    short-vertical.thumbnail.jpg     # ảnh bìa (render --thumbnail, make tự tạo)
+  06-capcut/                         # tuỳ chọn — pipeline.capcut
+    short-vertical/  scenes/ audio/ audio.wav captions.srt thumbnail.jpg draft/
   99-logs/                           # log/ảnh debug, xoá được
     brief.txt  repair.txt  invalid.json
     attempts/  stills/
@@ -394,7 +410,10 @@ out/<projectId>/
 | `video/src/visuals/stick/StickFigure.tsx` | Nhân vật que + bong bóng thoại cho bài giảng |
 | `video/src/visuals/index.tsx` | `Visual` dispatcher + `hasVisual` |
 | `video/src/lib/` | `types.ts`, `theme.ts`, `motion.ts`, `defaults.ts` dùng chung |
-| `video/src/styles/` | Registry style; `tech-explainer` (tối) và `whiteboard` (giấy sáng) |
+| `config/templates/` | Giao diện dạng JSON: `tech-explainer` (tối), `whiteboard` (giấy sáng), bản sinh từ video mẫu |
+| `config/aspects.json` | Bố cục theo khung hình (kích thước, cỡ chữ, vị trí) — nguồn sự thật cho cả Python lẫn Remotion |
+| `config/visuals.json` | Catalog visual: kind, schema `visual.data`, giá trị mặc định |
+| `pipeline/analyze/` | Phân tích video mẫu → template (`docs/ANALYZE.md`) |
 | `video/src/compositions/ExplainerVideo.tsx` | Timeline scene, caption, SFX, style, watermark |
 | `video/src/components/Captions.tsx` | Phụ đề khung cố định, cắt thẳng giữa card, không pop/nhảy từng từ |
 | `video/src/components/Background.tsx` | Nền tối: gradient + lưới mờ + quầng sáng "thở" chậm |

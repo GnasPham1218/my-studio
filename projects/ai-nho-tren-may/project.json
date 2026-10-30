@@ -9,5 +9,12 @@
   "formats": [
     "short"
   ],
-  "createdAt": "2026-10-21T10:10:00"
+  "createdAt": "2026-10-21T10:10:00",
+  "thumbnail": {
+    "text": "Vì sao AI đang quay về máy của bạn?",
+    "emphasis": [
+      "AI",
+      "máy"
+    ]
+  }
 }

@@ -1,4 +1,20 @@
-import type { Props } from "./types";
+import aspects from "../../../config/aspects.json";
+import base from "../../../config/templates/_base.json";
+import techExplainer from "../../../config/templates/tech-explainer.json";
+import type { Layout, Props, Template } from "./types";
+
+/**
+ * Props mặc định chỉ để xem trước trong `remotion studio`. Khi render thật,
+ * pipeline.build ghi layout + template đầy đủ vào props.json; ở đây lấy thẳng
+ * từ config để Studio luôn khớp với pipeline.
+ */
+const layout = { aspect: "vertical", ...aspects.aspects.vertical } as unknown as Layout;
+const template = {
+  ...base,
+  ...techExplainer,
+  background: { ...base.background, ...techExplainer.background },
+  transition: { ...base.transition, ...techExplainer.transition },
+} as unknown as Template;
 
 const brand = {
   channel: {
@@ -55,20 +71,32 @@ const sampleScene = {
   ],
 };
 
+// Cảnh thứ hai để Studio xem được chuyển cảnh.
+const sampleScene2 = {
+  ...sampleScene,
+  id: "s02",
+  type: "list",
+  startSec: 3,
+  onScreenText: "Ba lý do",
+  bullets: ["Riêng tư", "Không cần mạng", "Miễn phí"],
+  words: [],
+};
+
 export const defaultProps: Props = {
   format: "short",
-  styleId: "tech-explainer",
-  width: 1080,
-  height: 1920,
-  fps: 30,
-  totalSec: 3,
+  aspect: "vertical",
+  width: layout.width,
+  height: layout.height,
+  fps: layout.fps,
+  totalSec: 6,
   projectId: "demo",
   title: "Demo",
   brand: brand as Props["brand"],
-  safeArea: { top: 220, bottom: 380, left: 60, right: 140 },
+  template,
+  layout,
   audioDir: "",
   sfxCatalog: {},
-  scenes: [sampleScene],
+  scenes: [sampleScene, sampleScene2],
   captions: [
     {
       start: 0.1,

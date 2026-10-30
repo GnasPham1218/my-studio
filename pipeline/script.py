@@ -10,7 +10,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from . import llm, paths, validate
+from . import config, llm, paths, validate
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -296,7 +296,7 @@ def main(argv: list[str] | None = None) -> int:
         description="Research + viết kịch bản video bằng OpenCode agent.",
     )
     parser.add_argument("--topic", help="Chủ đề video (bắt buộc nếu tạo mới)")
-    parser.add_argument("--format", choices=["short", "long"], default="long")
+    parser.add_argument("--format", choices=config.format_ids(), default="long")
     parser.add_argument("--project-id", help="Slug dự án; mặc định sinh từ chủ đề")
     parser.add_argument("--audience", default="người quan tâm AI và công nghệ")
     parser.add_argument("--angle", default="")

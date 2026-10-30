@@ -79,63 +79,75 @@ python -m pipeline.tts --project-id english-whiteboard-demo --format short --onl
 python -m pipeline.align --project-id english-whiteboard-demo --format short --force
 ```
 
-## 2. Thêm style trình bày
+## 2. Thêm template (giao diện)
 
-1. Tạo `video/src/styles/<style-id>.ts`, export một `VideoStyle`:
+Template là dữ liệu JSON, không phải code. Có hai cách tạo:
 
-```ts
-import type { VideoStyle } from "./tech-explainer";
+**Từ video mẫu** (khuyến nghị): `python -m pipeline.analyze run <video> --id <id>`
+(xem `docs/ANALYZE.md`).
 
-export const minimal: VideoStyle = {
-  id: "minimal",
-  label: "Minimal",
-  description: "Ít chuyển động, nhiều khoảng trắng.",
-  backgroundVariant: () => "calm",
-  backgroundKind: "tech",   // "tech" = nền tối, "paper" = giấy sáng
-  captionTheme: "tech",     // "tech" = chữ sáng, "paper" = thẻ giấy
-  showSceneIndex: false,
-  showProgress: true,       // thanh tiến độ riêng khi ẩn số scene
-  showWatermark: true,
-};
+**Viết tay**: tạo `config/templates/<id>.json`, chỉ khai báo phần khác
+`config/templates/_base.json`:
+
+```json
+{
+  "schemaVersion": 1,
+  "id": "minimal",
+  "label": "Minimal",
+  "colors": { "bg": "#FFFFFF", "fg": "#111111", "primary": "#2563EB" },
+  "background": { "kind": "solid" },
+  "caption": { "textShadow": false, "scrim": [] },
+  "chrome": { "sceneIndex": false, "progress": true }
+}
 ```
 
-2. Đăng ký trong `video/src/styles/index.ts`:
+Khoá hợp lệ nằm ở `schemas/template.schema.json` (sai khoá hoặc sai kiểu thì
+`pipeline.build` dừng và nói rõ chỗ sai). Đặt `"style": "minimal"` trong
+`projects/<id>/project.json`, hoặc thử nhanh với `--template minimal` ở
+`build`/`render`/`make`.
 
-```ts
-import { minimal } from "./minimal";
-export const styles = { "tech-explainer": techExplainer, minimal };
-```
-
-3. Đặt `"style": "minimal"` trong `projects/<id>/project.json`.
-4. Build lại props; `build.py` tự ghi `styleId` vào props.
-
-Style không nên chứa nội dung hay đọc file. Nếu cần thay đổi bố cục sâu hơn
-(ví dụ format ngang), hãy thêm composition mới thay vì nhồi vào style.
+Template **chỉ** điều khiển giao diện (màu, font, nền, phụ đề, chrome, chuyển
+động). Bố cục và cỡ chữ theo khung hình nằm ở `config/aspects.json`; nội dung
+nằm trong `projects/`. Thêm một thuộc tính giao diện mới: thêm vào schema,
+`config/templates/_base.json` (giá trị mặc định), type `Template` trong
+`video/src/lib/types.ts`, rồi dùng trong component qua `useTemplate()`.
 
 ## 3. Thêm scene type
 
 Ví dụ thêm `demo`:
 
 1. Thêm `"demo"` vào `enum` của `scene.type` trong
-   `schemas/script.schema.json`.
-2. Nếu có luật riêng (số từ, field bắt buộc), thêm vào `pipeline/validate.py`.
-3. Tạo `video/src/scenes/Demo.tsx`:
+   `schemas/script.schema.json`, và vào `sceneTypes` của format cần dùng
+   trong `config/formats.json`.
+2. Nếu có luật riêng (số từ, field bắt buộc), thêm vào `pipeline/validate.py`
+   kèm test trong `tests/test_validate.py`.
+3. Nếu scene cần cỡ chữ/độ rộng riêng, thêm khối `scenes.demo` vào **mọi**
+   khung hình trong `config/aspects.json` và type `Layout` ở
+   `video/src/lib/types.ts` (test `test_all_aspects_share_the_same_structure`
+   sẽ báo nếu thiếu).
+4. Tạo `video/src/scenes/Demo.tsx`, lấy kích thước từ layout, không so sánh
+   tên format:
 
 ```tsx
 import React from "react";
 import type { SceneProps } from "./shared";
 import { Headline, Layout } from "./shared";
+import { useLayout } from "../lib/context";
 
-export const Demo: React.FC<SceneProps> = ({ scene, brand, format }) => (
-  <Layout format={format}>
-    <Headline text={scene.onScreenText ?? ""} brand={brand} delay={0} />
-  </Layout>
-);
+export const Demo: React.FC<SceneProps> = ({ scene, brand }) => {
+  const t = useLayout().scenes.demo;
+  return (
+    <Layout>
+      <Headline text={scene.onScreenText ?? ""} brand={brand} size={t.headline} />
+    </Layout>
+  );
+};
 ```
 
-4. Import + thêm `case "demo"` trong `video/src/scenes/index.tsx`.
-5. Nếu muốn nền khác, cập nhật `backgroundVariant` trong style.
-6. Chạy `cd video; npx tsc --noEmit; cd ..`, build và render still để kiểm tra.
+5. Import + thêm `case "demo"` trong `video/src/scenes/index.tsx`.
+6. Nếu muốn nền khác theo loại scene, thêm vào `background.variants` của template.
+7. Chạy `cd video; npx tsc --noEmit; cd ..`, build và render still ở **cả
+   khung dọc lẫn ngang** để kiểm tra.
 
 `SceneRenderer` hiện có các nhóm: `hook`, `stat`, `punch`/`quote`/`title`/…,
 `list`/`bullets`/`captionStack`/`recap`, `timeline`, `compare`, `chart`,
@@ -144,54 +156,85 @@ case rõ ràng.
 
 ## 4. Thêm visual metaphor
 
-Ví dụ thêm `pipeline`:
+Visual nhận **dữ liệu**, không chứa nội dung. Ba nơi phải đồng bộ, và `tsc` báo
+lỗi nếu quên một trong hai nơi đầu:
 
-1. Thêm `"pipeline"` vào `visual.kind` trong `schemas/script.schema.json`.
-2. Tạo `video/src/visuals/tech/PipelineDiagram.tsx`:
+1. **Component** `video/src/visuals/tech/PipelineDiagram.tsx`, nhận `data` đã có
+   đủ giá trị (build đã gộp default) và lấy bề rộng từ layout:
 
 ```tsx
 import React from "react";
 import type { Brand } from "../../lib/types";
-import { fontMono, withAlpha } from "../../lib/theme";
+import { fontMono } from "../../lib/theme";
 import { useEnter } from "../../lib/motion";
-import { WIDE } from "../layout";
+import { useLayout } from "../../lib/context";
 
-export const PipelineDiagram: React.FC<{ brand: Brand }> = ({ brand }) => {
+export type PipelineData = { steps: string[] };
+
+export const PipelineDiagram: React.FC<{ brand: Brand; data: PipelineData }> = ({
+  brand,
+  data,
+}) => {
   const enter = useEnter(4);
+  const { wide } = useLayout();
   return (
-    <div style={{ ...enter, width: WIDE, fontFamily: fontMono, color: brand.colors.fg }}>
-      …
+    <div style={{ ...enter, width: wide, fontFamily: fontMono, color: brand.colors.fg }}>
+      {data.steps.join(" → ")}
     </div>
   );
 };
 ```
 
-3. Import và thêm vào `visuals/index.tsx`:
+2. **Registry** `video/src/visuals/registry.tsx`: thêm một mục vào `renderers`
+   (khoá phải trùng tên kind trong catalog):
 
 ```tsx
-import { PipelineDiagram } from "./tech/PipelineDiagram";
-
-// trong Visual:
-case "pipeline":
-  return <PipelineDiagram brand={brand} />;
-
-// trong hasVisual:
-const VISUAL_KINDS = new Set([..., "pipeline"]);
+pipeline: ({ scene, brand }) => (
+  <PipelineDiagram brand={brand} data={dataOf<PipelineData>(scene)} />
+),
 ```
 
-4. Thêm kind vào tài liệu/agent nếu cần.
-5. Dùng trong script:
+3. **Catalog** `config/visuals.json`: khai báo `summary`, `useFor`, `requireData`,
+   `dataSchema` (JSON Schema, `additionalProperties: false`) và `defaults`:
 
 ```json
-"visual": { "kind": "pipeline", "label": "Input → Model → Output" }
+"pipeline": {
+  "summary": "Chuỗi bước nối nhau bằng mũi tên.",
+  "useFor": "Quy trình nhiều bước.",
+  "requireData": true,
+  "dataSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": { "steps": { "type": "array", "minItems": 2, "maxItems": 5,
+                               "items": { "type": "string", "maxLength": 24 } } }
+  },
+  "defaults": { "steps": ["Input", "Model", "Output"] }
+}
 ```
 
-Visual phải tự vẽ bằng code, không đọc ảnh/asset ngoài. Nếu visual cần dữ
-liệu riêng, thêm field vào schema + type + props, đừng hard-code nội dung.
+`defaults` chỉ là **mẫu trung tính** để component luôn có đủ trường. Visual mang
+nội dung thì đặt `"requireData": true` trong catalog: kịch bản bắt buộc có
+`visual.data`, nếu không `validate.py` báo lỗi (nội dung của một video cũ không
+được lọt sang video mới). Visual không mang nội dung (như `phone`, `stick`) đặt
+`false`.
+
+Dùng trong script (có thể bỏ các khoá không cần đổi):
+
+```json
+"visual": { "kind": "pipeline", "data": { "steps": ["Thu thập", "Huấn luyện", "Triển khai"] } }
+```
+
+`validate.py` kiểm `kind` và `data` theo catalog; `pipeline.build` gộp default
+vào `visual.data`; agent đọc catalog bằng `python -m pipeline.visuals --list`.
+`tests/test_config.py` kiểm default của mọi kind hợp lệ với schema của nó.
+
+Visual phải tự vẽ bằng code, không đọc ảnh/asset ngoài. Kích thước dùng
+`useLayout().wide` (không hard-code 860); khung hình hẹp có thể thu nhỏ bằng
+`layout.visualScale`.
 
 ### Visual `stick` cho whiteboard
 
-Style `whiteboard` dùng `visual.kind: "stick"` với nhân vật que:
+Template `whiteboard` dùng `visual.kind: "stick"` với nhân vật que:
 
 ```json
 "visual": {
@@ -243,19 +286,35 @@ Chỉ thêm khi thật sự có điểm nhấn thị giác. **Không dùng whoos
 
 `whoosh` nằm trong `banned` của catalog và bị build từ chối.
 
-## 6. Thêm format / tỉ lệ mới
+## 6. Thêm độ dài (format) hoặc khung hình (aspect)
 
-Hiện tại chỉ short 9:16. Nếu thật sự cần thêm:
+Hai trục độc lập:
 
-1. Thêm key vào `config/formats.json` (width, height, fps, safe area, giới hạn
-   scene/từ/giây).
-2. Mở rộng type `format` trong `video/src/lib/types.ts` và các layout đang dùng
-   `"short" | "long"`.
-3. Cập nhật `pipeline/validate.py`, `build.py` và CLI `choices`.
-4. Nếu bố cục khác hẳn, tạo composition mới trong
-   `video/src/compositions/`, đăng ký ở `Root.tsx`, và cho `render.mjs` chọn
-   composition ID tương ứng.
-5. Thêm ảnh still cho cả hai tỉ lệ trước khi render full.
+- **format** (`short`, `long`) = luật nội dung: số scene, số từ, loại scene,
+  thời lượng. Nằm ở `config/formats.json`.
+- **aspect** (`vertical`, `horizontal`, `square`) = bố cục: kích thước, safe
+  area, cỡ chữ, vị trí phụ đề. Nằm ở `config/aspects.json`.
+
+Cùng một kịch bản render được ở nhiều khung hình; audio và căn thời gian dùng
+chung:
+
+```powershell
+python -m pipeline.make --project-id <id> --format short --aspect vertical,horizontal,square
+```
+
+**Thêm khung hình** (ví dụ 4:5): thêm một khối vào `config/aspects.json` có
+đúng bộ khoá của `vertical` (test `test_all_aspects_share_the_same_structure`
+kiểm), rồi render still ở các loại scene chính (hook, stat, list, compare) để
+chỉnh số. Không cần sửa code Python hay Remotion. `square` đang ở trạng thái
+`draft`: dùng được nhưng số chưa tinh chỉnh kỹ.
+
+**Thêm độ dài** (ví dụ `medium`): thêm khối vào `config/formats.json` (có
+`defaultAspect`). Tên file kịch bản là `scripts/<format>.json`. Nếu agent
+viết kịch bản cần luật riêng, cập nhật prompt trong `.opencode/agents/`.
+
+Component Remotion **không bao giờ** so sánh tên format hay aspect: chỉ đọc
+`useLayout()` và `useTemplate()`. Cần một con số mới theo khung hình thì thêm
+khoá vào mọi khối trong `aspects.json` và type `Layout`.
 
 ## 7. Thêm composition / loại video khác
 
@@ -270,16 +329,19 @@ Hiện tại chỉ short 9:16. Nếu thật sự cần thêm:
 ## 8. Checklist sau mỗi thay đổi
 
 ```powershell
-# 1. Type + Python
+# 1. Test + lint + type (CI chạy đúng các lệnh này)
+python -m pytest
+ruff check pipeline tools tests
 cd video; npx tsc --noEmit; cd ..
-python -m compileall -q pipeline tools
 
 # 2. Build props mới
 python -m pipeline.build --project-id ai-nho-tren-may --format short
 
-# 3. Xem 1 frame, kiểm tra caption/visual
+# 3. Xem 1 frame ở khung dọc và ngang, kiểm tra caption/visual
 python -m pipeline.render --project-id ai-nho-tren-may --format short `
-    --still 900 --scale 0.5
+    --aspect vertical --still 900 --scale 0.5
+python -m pipeline.render --project-id ai-nho-tren-may --format short `
+    --aspect horizontal --still 900 --scale 0.5
 
 # 4. Render thử 5 giây (nếu có sửa timeline/SFX)
 python -m pipeline.render --project-id ai-nho-tren-may --format short --preview 5
@@ -287,6 +349,10 @@ python -m pipeline.render --project-id ai-nho-tren-may --format short --preview 
 # 5. Render full + kiểm tra audio
 python -m pipeline.render --project-id ai-nho-tren-may --format short
 ```
+
+Refactor giao diện: chụp ảnh trước khi sửa và so pixel sau khi sửa. Công cụ có
+sẵn: `node video/stills.mjs <outDir> --props <props.json> --outdir <dir> --frames 60,300`
+(một lần bundle cho nhiều frame).
 
 Kiểm tra nhanh style whiteboard mà không cần TTS:
 
@@ -305,5 +371,5 @@ Kiểm tra cuối:
 - Caption không nhảy, không chồng, không có card trắng.
 - Không có whoosh ở điểm cắt.
 - SFX chỉ xuất hiện đúng điểm nhấn đã khai báo.
-- Video đúng 1080×1920, 30 fps, thời lượng khớp props.
+- Video đúng kích thước/fps của khung hình đã chọn, thời lượng khớp props.
 - `projects/` không bị ghi đè bởi output.

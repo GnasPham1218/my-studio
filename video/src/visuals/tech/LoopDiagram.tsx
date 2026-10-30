@@ -2,57 +2,67 @@ import React from "react";
 import type { Brand } from "../../lib/types";
 import { fontDisplay, fontMono, withAlpha } from "../../lib/theme";
 import { useEnter, useProgress } from "../../lib/motion";
-import { WIDE } from "../layout";
+import { useLayout } from "../../lib/context";
 
-const LoopDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
-  brand,
-  delay = 5,
-}) => {
+export type LoopData = {
+  nodes: { title: string; sub: string }[];
+  caption: string;
+};
+
+// Vị trí hai nút trong viewBox 860x400.
+const NODE_X = [20, 620];
+
+const LoopDiagram: React.FC<{
+  brand: Brand;
+  data: LoopData;
+  delay?: number;
+}> = ({ brand, data, delay = 5 }) => {
   const enter = useEnter(delay);
   const draw = useProgress(delay + 3, 0.9);
+  const { wide } = useLayout();
   const primary = brand.colors.primary;
 
   return (
-    <div style={{ ...enter, width: WIDE }}>
-      <svg width={WIDE} height={400} viewBox="0 0 860 400">
-        {[
-          { x: 20, year: "2018", sub: "AI on-device" },
-          { x: 620, year: "2025", sub: "SLM quay lại" },
-        ].map((node) => (
-          <g key={node.year}>
-            <rect
-              x={node.x}
-              y={105}
-              width={220}
-              height={132}
-              rx={22}
-              fill={withAlpha(brand.colors.surface, 0.75)}
-              stroke={withAlpha(brand.colors.fg, 0.16)}
-            />
-            <text
-              x={node.x + 110}
-              y={158}
-              textAnchor="middle"
-              fill={brand.colors.fg}
-              fontFamily={fontMono}
-              fontSize="30"
-              fontWeight="700"
-              letterSpacing="3"
-            >
-              {node.year}
-            </text>
-            <text
-              x={node.x + 110}
-              y={196}
-              textAnchor="middle"
-              fill={brand.colors.muted}
-              fontFamily={fontDisplay}
-              fontSize="23"
-            >
-              {node.sub}
-            </text>
-          </g>
-        ))}
+    <div style={{ ...enter, width: wide }}>
+      <svg width={wide} height={400} viewBox="0 0 860 400">
+        {data.nodes.map((node, index) => {
+          const x = NODE_X[index];
+          return (
+            <g key={node.title}>
+              <rect
+                x={x}
+                y={105}
+                width={220}
+                height={132}
+                rx={22}
+                fill={withAlpha(brand.colors.surface, 0.75)}
+                stroke={withAlpha(brand.colors.fg, 0.16)}
+              />
+              <text
+                x={x + 110}
+                y={158}
+                textAnchor="middle"
+                fill={brand.colors.fg}
+                fontFamily={fontMono}
+                fontSize="30"
+                fontWeight="700"
+                letterSpacing="3"
+              >
+                {node.title}
+              </text>
+              <text
+                x={x + 110}
+                y={196}
+                textAnchor="middle"
+                fill={brand.colors.muted}
+                fontFamily={fontDisplay}
+                fontSize="23"
+              >
+                {node.sub}
+              </text>
+            </g>
+          );
+        })}
 
         <path
           d="M252 148H608"
@@ -98,7 +108,7 @@ const LoopDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
           letterSpacing="2"
           opacity={draw}
         >
-          VÒNG LẶP
+          {data.caption}
         </text>
       </svg>
     </div>

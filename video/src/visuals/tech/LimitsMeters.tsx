@@ -2,23 +2,27 @@ import React from "react";
 import type { Brand } from "../../lib/types";
 import { fontDisplay, fontMono, withAlpha } from "../../lib/theme";
 import { useEnter, useProgress } from "../../lib/motion";
+import { useLayout } from "../../lib/context";
 import { CloudIcon } from "../icons";
-import { WIDE } from "../layout";
 
-const LimitsMeters: React.FC<{ brand: Brand; delay?: number }> = ({
-  brand,
-  delay = 6,
-}) => {
+export type LimitsData = {
+  rows: { label: string; value: number }[];
+  badge: string;
+  footer: string;
+};
+
+const LimitsMeters: React.FC<{
+  brand: Brand;
+  data: LimitsData;
+  delay?: number;
+}> = ({ brand, data, delay = 6 }) => {
   const enter = useEnter(delay);
   const grow = useProgress(delay + 2, 0.8);
-  const rows = [
-    { label: "Suy luận phức tạp", value: 0.28 },
-    { label: "Context dài", value: 0.2 },
-  ];
+  const { wide } = useLayout();
 
   return (
-    <div style={{ ...enter, width: WIDE }}>
-      {rows.map((row) => (
+    <div style={{ ...enter, width: wide }}>
+      {data.rows.map((row) => (
         <div key={row.label} style={{ marginBottom: 44 }}>
           <div
             style={{
@@ -40,7 +44,7 @@ const LimitsMeters: React.FC<{ brand: Brand; delay?: number }> = ({
                 color: brand.colors.accent,
               }}
             >
-              MÁY
+              {data.badge}
             </span>
           </div>
           <div
@@ -79,7 +83,7 @@ const LimitsMeters: React.FC<{ brand: Brand; delay?: number }> = ({
             color: withAlpha(brand.colors.fg, 0.4),
           }}
         >
-          PHẦN CÒN LẠI CẦN CLOUD
+          {data.footer}
         </span>
       </div>
     </div>

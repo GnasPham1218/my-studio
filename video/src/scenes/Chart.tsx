@@ -1,12 +1,14 @@
 import React from "react";
 import { spring, useCurrentFrame, useVideoConfig } from "remotion";
 import type { SceneProps } from "./shared";
-import { COLUMN, Headline, Kicker, Layout } from "./shared";
+import { Headline, Kicker, Layout } from "./shared";
 import { fontDisplay, fontMono, withAlpha } from "../lib/theme";
+import { useLayout } from "../lib/context";
 import { Punch } from "./Punch";
 
 export const Chart: React.FC<SceneProps> = (props) => {
-  const { scene, brand, format } = props;
+  const { scene, brand } = props;
+  const t = useLayout().scenes.chart;
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const data = scene.chart?.data ?? [];
@@ -14,10 +16,10 @@ export const Chart: React.FC<SceneProps> = (props) => {
     return <Punch {...props} />;
   }
   const max = Math.max(...data.map((item) => item.value), 1);
-  const maxHeight = format === "short" ? 380 : 460;
+  const maxHeight = t.barAreaHeight;
 
   return (
-    <Layout format={format} align="left" vertical="center">
+    <Layout align="left" vertical="center">
       {scene.kicker ? (
         <Kicker brand={brand} delay={0}>
           {scene.kicker}
@@ -27,7 +29,7 @@ export const Chart: React.FC<SceneProps> = (props) => {
         text={scene.onScreenText ?? scene.narration}
         emphasis={scene.emphasis}
         brand={brand}
-        size={format === "short" ? 54 : 46}
+        size={t.headline}
         delay={2}
         weight={700}
       />

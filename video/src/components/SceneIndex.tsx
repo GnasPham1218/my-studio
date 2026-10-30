@@ -2,6 +2,7 @@ import React from "react";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 import type { Brand, Scene } from "../lib/types";
 import { fontMono, withAlpha } from "../lib/theme";
+import { useLayout } from "../lib/context";
 
 /**
  * Chỉ số scene ở góc trên trái, đối xứng với watermark bên phải.
@@ -13,6 +14,7 @@ export const SceneIndex: React.FC<{ scenes: Scene[]; brand: Brand }> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const place = useLayout().chrome.sceneIndex;
   const time = frame / fps;
 
   const index = scenes.findIndex(
@@ -27,8 +29,8 @@ export const SceneIndex: React.FC<{ scenes: Scene[]; brand: Brand }> = ({
     <div
       style={{
         position: "absolute",
-        top: 116,
-        left: 44,
+        top: place.top,
+        left: place.left,
         pointerEvents: "none",
       }}
     >

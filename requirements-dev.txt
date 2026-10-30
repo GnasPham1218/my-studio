@@ -1,0 +1,5 @@
+# Công cụ phát triển (test). Cài thêm sau requirements.txt:
+#   uv pip install --python .venv\Scripts\python.exe -r requirements-dev.txt
+pytest>=8
+
+ruff>=0.6

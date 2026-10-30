@@ -2,21 +2,39 @@ import React from "react";
 import type { Brand } from "../../lib/types";
 import { fontDisplay, fontMono, withAlpha } from "../../lib/theme";
 import { useEnter, useProgress } from "../../lib/motion";
+import { useLayout } from "../../lib/context";
 import { CloudIcon, PhoneIcon } from "../icons";
-import { WIDE } from "../layout";
 
-const QuestionDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
-  brand,
-  delay = 6,
-}) => {
+type Panel = { title: string; sub: string; icon?: "phone" | "cloud" };
+
+export type QuestionData = { left: Panel; right: Panel; mark: string };
+
+const QuestionDiagram: React.FC<{
+  brand: Brand;
+  data: QuestionData;
+  delay?: number;
+}> = ({ brand, data, delay = 6 }) => {
   const enter = useEnter(delay);
   const left = useProgress(delay + 1, 0.6);
   const right = useProgress(delay + 4, 0.6);
+  const { wide } = useLayout();
+
+  const icon = (kind: Panel["icon"], primary: boolean) =>
+    kind === "cloud" ? (
+      <CloudIcon
+        size={52}
+        color={primary ? brand.colors.primary : withAlpha(brand.colors.fg, 0.55)}
+      />
+    ) : (
+      <PhoneIcon
+        size={52}
+        color={primary ? brand.colors.primary : withAlpha(brand.colors.fg, 0.55)}
+      />
+    );
 
   const panel = (
-    title: string,
-    sub: string,
-    icon: React.ReactNode,
+    item: Panel,
+    primary: boolean,
     progress: number,
     offset: number,
   ) => (
@@ -34,7 +52,7 @@ const QuestionDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
         gap: 14,
       }}
     >
-      {icon}
+      {icon(item.icon, primary)}
       <div
         style={{
           fontFamily: fontMono,
@@ -44,7 +62,7 @@ const QuestionDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
           color: brand.colors.fg,
         }}
       >
-        {title}
+        {item.title}
       </div>
       <div
         style={{
@@ -54,7 +72,7 @@ const QuestionDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
           color: brand.colors.muted,
         }}
       >
-        {sub}
+        {item.sub}
       </div>
     </div>
   );
@@ -63,7 +81,7 @@ const QuestionDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
     <div
       style={{
         ...enter,
-        width: WIDE,
+        width: wide,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -71,20 +89,8 @@ const QuestionDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
         position: "relative",
       }}
     >
-      {panel(
-        "MÁY",
-        "nhanh, riêng tư",
-        <PhoneIcon size={52} color={brand.colors.primary} />,
-        left,
-        -24,
-      )}
-      {panel(
-        "CLOUD",
-        "mạnh, context dài",
-        <CloudIcon size={52} color={withAlpha(brand.colors.fg, 0.55)} />,
-        right,
-        24,
-      )}
+      {panel(data.left, true, left, -24)}
+      {panel(data.right, false, right, 24)}
       <div
         style={{
           position: "absolute",
@@ -96,7 +102,7 @@ const QuestionDiagram: React.FC<{ brand: Brand; delay?: number }> = ({
           opacity: Math.min(left, right),
         }}
       >
-        ?
+        {data.mark}
       </div>
     </div>
   );

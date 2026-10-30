@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      # Chỉ cài phần test cần. Không cài torch/omnivoice/whisper: test không nạp model.
+      - name: Cài dependency tối thiểu
+        run: >
+          pip install jsonschema numpy soundfile soxr pillow av scikit-learn scipy
+          -r requirements-dev.txt
+      - name: Lint (lỗi thật: import thừa, tên chưa định nghĩa)
+        run: ruff check pipeline tools tests
+      - name: Biên dịch
+        run: python -m compileall -q pipeline tools tests
+      - name: Test
+        run: python -m pytest
+
+  video:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: video
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: video/package-lock.json
+      - run: npm ci
+      # tsc cũng kiểm catalog visual (config/visuals.json) khớp registry.tsx.
+      - run: npx tsc --noEmit

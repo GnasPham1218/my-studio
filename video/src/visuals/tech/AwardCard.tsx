@@ -2,25 +2,28 @@ import React from "react";
 import type { Brand } from "../../lib/types";
 import { fontDisplay, fontMono, withAlpha } from "../../lib/theme";
 import { useEnter } from "../../lib/motion";
-import { WIDE } from "../layout";
+import { useLayout } from "../../lib/context";
 
-const AwardCard: React.FC<{ brand: Brand; year: string; delay?: number }> = ({
-  brand,
-  year,
-  delay = 5,
-}) => {
+export type AwardData = {
+  publisher: string;
+  title: string;
+  rows: { label: string; active?: boolean }[];
+};
+
+const AwardCard: React.FC<{
+  brand: Brand;
+  year: string;
+  data: AwardData;
+  delay?: number;
+}> = ({ brand, year, data, delay = 5 }) => {
   const enter = useEnter(delay);
-  const rows = [
-    { label: "AI agents", active: false },
-    { label: "Small language models", active: true },
-    { label: "Long-acting HIV prevention", active: false },
-  ];
+  const { wide } = useLayout();
 
   return (
     <div
       style={{
         ...enter,
-        width: WIDE,
+        width: wide,
         borderRadius: 26,
         border: `1px solid ${withAlpha(brand.colors.fg, 0.14)}`,
         background: `linear-gradient(180deg, ${withAlpha(
@@ -47,7 +50,7 @@ const AwardCard: React.FC<{ brand: Brand; year: string; delay?: number }> = ({
             color: brand.colors.muted,
           }}
         >
-          MIT TECHNOLOGY REVIEW
+          {data.publisher}
         </span>
         <span
           style={{
@@ -71,10 +74,10 @@ const AwardCard: React.FC<{ brand: Brand; year: string; delay?: number }> = ({
           color: brand.colors.fg,
         }}
       >
-        10 Breakthrough Technologies
+        {data.title}
       </div>
       <div style={{ marginTop: 28 }}>
-        {rows.map((row, index) => (
+        {data.rows.map((row, index) => (
           <div
             key={row.label}
             style={{

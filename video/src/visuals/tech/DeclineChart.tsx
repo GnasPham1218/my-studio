@@ -2,30 +2,40 @@ import React from "react";
 import type { Brand } from "../../lib/types";
 import { fontDisplay, fontMono, withAlpha } from "../../lib/theme";
 import { useEnter, useProgress } from "../../lib/motion";
-import { WIDE } from "../layout";
+import { useLayout } from "../../lib/context";
 
-const DeclineChart: React.FC<{ brand: Brand; delay?: number }> = ({
-  brand,
-  delay = 5,
-}) => {
+export type DeclineData = {
+  title: string;
+  values: number[];
+  endLabel: string;
+};
+
+// Vùng vẽ trong viewBox 860x300: x từ 30 đến 830, đáy ở y=290.
+const X_FROM = 30;
+const X_TO = 830;
+const Y_BASE = 290;
+const Y_SPAN = 230;
+
+const DeclineChart: React.FC<{
+  brand: Brand;
+  data: DeclineData;
+  delay?: number;
+}> = ({ brand, data, delay = 5 }) => {
   const enter = useEnter(delay);
   const draw = useProgress(delay + 2, 1.1);
-  const points = [
-    [30, 160],
-    [170, 132],
-    [310, 100],
-    [450, 66],
-    [590, 60],
-    [730, 76],
-    [830, 86],
-  ];
+  const { wide } = useLayout();
+  const steps = Math.max(1, data.values.length - 1);
+  const points = data.values.map((value, index) => [
+    X_FROM + ((X_TO - X_FROM) * index) / steps,
+    Y_BASE - (Y_SPAN * value) / 100,
+  ]);
   const path = points
     .map(([x, y], index) => `${index === 0 ? "M" : "L"}${x} ${y}`)
     .join(" ");
   const last = points[points.length - 1];
 
   return (
-    <div style={{ ...enter, width: WIDE }}>
+    <div style={{ ...enter, width: wide }}>
       <div
         style={{
           fontFamily: fontMono,
@@ -35,9 +45,9 @@ const DeclineChart: React.FC<{ brand: Brand; delay?: number }> = ({
           marginBottom: 10,
         }}
       >
-        ĐẦU TƯ / KỲ VỌNG
+        {data.title}
       </div>
-      <svg width={WIDE} height={300} viewBox="0 0 860 300">
+      <svg width={wide} height={300} viewBox="0 0 860 300">
         {[50, 120, 190, 260].map((y) => (
           <line
             key={y}
@@ -87,7 +97,7 @@ const DeclineChart: React.FC<{ brand: Brand; delay?: number }> = ({
           letterSpacing="1"
           opacity={draw}
         >
-          2023
+          {data.endLabel}
         </text>
       </svg>
     </div>

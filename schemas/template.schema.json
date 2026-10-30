@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://my-studio.local/schemas/template.schema.json",
+  "title": "VideoTemplate",
+  "description": "Giao diện (look) của video: màu, font, nền, caption, chrome, chuyển động. Không chứa bố cục theo khung hình (config/aspects.json) hay nội dung. Có thể viết tay hoặc sinh từ video mẫu bằng pipeline.analyze.",
+  "type": "object",
+  "required": ["schemaVersion", "id"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z_][a-z0-9-]{0,40}$" },
+    "label": { "type": "string", "maxLength": 80 },
+    "description": { "type": "string", "maxLength": 400 },
+    "colors": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Ghi đè một phần brand.colors.",
+      "properties": {
+        "bg": { "$ref": "#/$defs/hex" },
+        "surface": { "$ref": "#/$defs/hex" },
+        "fg": { "$ref": "#/$defs/hex" },
+        "muted": { "$ref": "#/$defs/hex" },
+        "primary": { "$ref": "#/$defs/hex" },
+        "accent": { "$ref": "#/$defs/hex" }
+      }
+    },
+    "fonts": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Ghi đè một phần brand.fonts. Font phải được nạp trong video/src/index.ts.",
+      "properties": {
+        "display": { "type": "string", "maxLength": 60 },
+        "body": { "type": "string", "maxLength": 60 },
+        "mono": { "type": "string", "maxLength": 60 }
+      }
+    },
+    "background": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "enum": ["tech", "paper", "solid", "gradient"] },
+        "defaultVariant": { "enum": ["hero", "data", "calm", "glitch"] },
+        "variants": {
+          "type": "object",
+          "description": "Loại scene -> biến thể nền (chỉ kind=tech).",
+          "additionalProperties": { "enum": ["hero", "data", "calm", "glitch"] }
+        },
+        "gradient": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "angle": { "type": "number", "minimum": 0, "maximum": 360 },
+            "stops": {
+              "type": "array",
+              "maxItems": 4,
+              "items": { "$ref": "#/$defs/hex" }
+            }
+          }
+        }
+      }
+    },
+    "caption": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fontWeight": { "type": "integer", "minimum": 100, "maximum": 900 },
+        "letterSpacing": { "type": "number", "minimum": -5, "maximum": 10 },
+        "uppercase": { "type": "boolean" },
+        "textShadow": { "type": "boolean" },
+        "textColor": { "$ref": "#/$defs/colorRef" },
+        "stroke": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["px", "color"],
+          "properties": {
+            "px": { "type": "number", "minimum": 0, "maximum": 16 },
+            "color": { "$ref": "#/$defs/colorRef" }
+          }
+        },
+        "highlight": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "color": { "oneOf": [{ "$ref": "#/$defs/colorRef" }, { "type": "null" }] },
+            "underline": { "oneOf": [{ "$ref": "#/$defs/colorRef" }, { "type": "null" }] }
+          }
+        },
+        "card": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "properties": {
+            "background": { "$ref": "#/$defs/colorRef" },
+            "backgroundAlpha": { "type": "number", "minimum": 0, "maximum": 1 },
+            "border": { "$ref": "#/$defs/colorRef" },
+            "borderAlpha": { "type": "number", "minimum": 0, "maximum": 1 },
+            "radius": { "type": "number", "minimum": 0, "maximum": 80 }
+          }
+        },
+        "scrim": {
+          "type": "array",
+          "maxItems": 5,
+          "description": "[[phần trăm từ đáy, alpha], ...]; mảng rỗng = không có scrim.",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "holdGapSec": { "type": "number", "minimum": 0, "maximum": 3 },
+        "fontSizeRel": {
+          "type": ["number", "null"],
+          "minimum": 0.01,
+          "maximum": 0.2,
+          "description": "Cỡ chữ theo tỉ lệ cạnh ngắn của khung (dùng chung được giữa 9:16 và 16:9); null = theo layout."
+        },
+        "bottomRel": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 0.9,
+          "description": "Khoảng cách đáy theo tỉ lệ chiều cao khung; null = theo layout."
+        },
+        "maxWidthRel": {
+          "type": ["number", "null"],
+          "minimum": 0.2,
+          "maximum": 1,
+          "description": "Bề rộng tối đa theo tỉ lệ chiều rộng khung; null = theo layout."
+        }
+      }
+    },
+    "chrome": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sceneIndex": { "type": "boolean" },
+        "progress": { "type": "boolean" },
+        "watermark": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "glow": { "type": "boolean" },
+            "uppercase": { "type": "boolean" },
+            "letterSpacing": { "type": "number" },
+            "opacity": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+    "motion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enterDistancePx": { "type": "number", "minimum": 0, "maximum": 200 },
+        "enterSec": { "type": "number", "minimum": 0.05, "maximum": 3 }
+      }
+    },
+    "transition": {
+      "type": "object",
+      "description": "Chuyển cảnh giữa các scene. Cảnh mới vào sớm `sec` giây, chồng lên cuối cảnh cũ; audio và caption giữ nguyên mốc.",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["none", "fade", "slide", "push", "wipe", "zoom", "blur"]
+        },
+        "sec": { "type": "number", "minimum": 0, "maximum": 1.5 },
+        "byType": {
+          "type": "object",
+          "description": "Ghi đè kind theo loại scene, vd. { \"punch\": \"zoom\" }.",
+          "additionalProperties": {
+            "enum": ["none", "fade", "slide", "push", "wipe", "zoom", "blur"]
+          }
+        }
+      }
+    },
+    "pacing": {
+      "type": "object",
+      "description": "Nhịp dựng đo từ video mẫu. Chỉ để tham khảo khi viết kịch bản, Remotion không dùng.",
+      "additionalProperties": false,
+      "properties": {
+        "durationSec": { "type": "number" },
+        "avgSceneSec": { "type": "number" },
+        "medianSceneSec": { "type": "number" },
+        "cutsPerMinute": { "type": "number" }
+      }
+    },
+    "audio": {
+      "type": "object",
+      "description": "Đặc điểm âm thanh đo từ video mẫu (tham khảo).",
+      "additionalProperties": false,
+      "properties": {
+        "loudnessDbfs": { "type": ["number", "null"] },
+        "hasMusicBed": { "type": ["boolean", "null"] },
+        "tempoBpm": { "type": ["number", "null"] }
+      }
+    },
+    "source": {
+      "type": "object",
+      "description": "Nguồn gốc nếu template được sinh bằng pipeline.analyze.",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "hex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+    "colorRef": {
+      "description": "Tên màu trong palette (bg|surface|fg|muted|primary|accent) hoặc mã hex.",
+      "type": "string",
+      "pattern": "^(bg|surface|fg|muted|primary|accent|#[0-9A-Fa-f]{6})$"
+    }
+  }
+}

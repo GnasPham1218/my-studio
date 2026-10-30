@@ -1,17 +1,12 @@
 from __future__ import annotations
 
-import json
 import re
-from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parent.parent
-SCHEMA_PATH = ROOT / "schemas" / "script.schema.json"
-FORMATS_PATH = ROOT / "config" / "formats.json"
+from . import config, visuals
 
-SCHEMA: dict[str, Any] = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
-FORMATS: dict[str, Any] = json.loads(FORMATS_PATH.read_text(encoding="utf-8"))
-WORDS_PER_SECOND: float = FORMATS["wordsPerSecond"]
+SCHEMA: dict[str, Any] = config.read_json(config.SCHEMAS_DIR / "script.schema.json")
+WORDS_PER_SECOND: float = config.words_per_second()
 
 # Scene trình bày số liệu: luôn phải có claim kèm nguồn.
 FACT_SCENE_TYPES = {"stat", "chart", "compare", "timeline"}
@@ -62,7 +57,7 @@ def validate(
     project_id: str | None = None,
 ) -> list[str]:
     """Trả về danh sách lỗi. Rỗng = hợp lệ."""
-    if fmt not in FORMATS["formats"]:
+    if fmt not in config.format_ids():
         return [f"[config] format không hợp lệ: {fmt!r}"]
 
     errors = _structural(script)
@@ -70,7 +65,7 @@ def validate(
         # Lỗi cấu trúc có thể làm các kiểm tra dưới đây crash; dừng sớm.
         return errors
 
-    cfg = FORMATS["formats"][fmt]
+    cfg = config.format_rules(fmt)
     meta = script.get("meta") or {}
     scenes: list[dict[str, Any]] = script.get("scenes") or []
 
@@ -158,10 +153,10 @@ def validate(
             bullets = scene.get("bullets") or []
             if not bullets:
                 errors.append(f"[{sid}] scene 'bullets' phải có mảng bullets")
-            elif len(bullets) > cfg["typography"]["maxLines"]:
+            elif len(bullets) > cfg["maxBullets"]:
                 errors.append(
                     f"[{sid}] có {len(bullets)} bullet, tối đa "
-                    f"{cfg['typography']['maxLines']} dòng"
+                    f"{cfg['maxBullets']} dòng"
                 )
 
         if stype == "chart" and (scene.get("visual") or {}).get("kind") != "chart":
@@ -175,6 +170,9 @@ def validate(
 
         if stype == "compare" and not (scene.get("compare") or {}).get("items"):
             errors.append(f"[{sid}] scene 'compare' phải có compare.items")
+
+        for problem in visuals.data_errors(scene.get("visual")):
+            errors.append(f"[{sid}] {problem}")
 
         for claim in scene.get("claims") or []:
             if claim["source"] > len(sources):

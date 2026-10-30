@@ -104,7 +104,25 @@
       ],
       "visual": {
         "kind": "award",
-        "label": "2025"
+        "label": "2025",
+        "data": {
+          "publisher": "MIT TECHNOLOGY REVIEW",
+          "title": "10 Breakthrough Technologies",
+          "rows": [
+            {
+              "label": "AI agents",
+              "active": false
+            },
+            {
+              "label": "Small language models",
+              "active": true
+            },
+            {
+              "label": "Long-acting HIV prevention",
+              "active": false
+            }
+          ]
+        }
       }
     },
     {
@@ -118,7 +136,20 @@
       ],
       "kicker": "Góc nhìn",
       "visual": {
-        "kind": "loop"
+        "kind": "loop",
+        "data": {
+          "nodes": [
+            {
+              "title": "2018",
+              "sub": "AI on-device"
+            },
+            {
+              "title": "2025",
+              "sub": "SLM quay lại"
+            }
+          ],
+          "caption": "VÒNG LẶP"
+        }
       }
     },
     {
@@ -132,7 +163,26 @@
       ],
       "kicker": "2019 – 2020",
       "visual": {
-        "kind": "shrink"
+        "kind": "shrink",
+        "data": {
+          "title": "SỐ THAM SỐ",
+          "rows": [
+            {
+              "label": "BERT · 110M",
+              "ratio": 1
+            },
+            {
+              "label": "DistilBERT · 66M",
+              "ratio": 0.6
+            },
+            {
+              "label": "MobileBERT · 25M",
+              "ratio": 0.23,
+              "accent": true
+            }
+          ],
+          "caption": "nhỏ hơn, vẫn chạy được trên điện thoại"
+        }
       }
     },
     {
@@ -181,7 +231,20 @@
       ],
       "visual": {
         "kind": "decline",
-        "label": "2023"
+        "label": "2023",
+        "data": {
+          "title": "ĐẦU TƯ / KỲ VỌNG",
+          "values": [
+            56,
+            69,
+            83,
+            97,
+            100,
+            93,
+            89
+          ],
+          "endLabel": "2023"
+        }
       },
       "kicker": "2023"
     },
@@ -197,7 +260,14 @@
       ],
       "visual": {
         "kind": "storage",
-        "label": "4-bit"
+        "label": "4-bit",
+        "data": {
+          "title": "DUNG LƯỢNG MÔ HÌNH",
+          "beforeLabel": "fp16 · 3B",
+          "afterLabel": "4-bit · 3B",
+          "reductionPct": 69,
+          "caption": "cùng một mô hình, nhẹ hơn gần 2/3"
+        }
       },
       "sfx": "tick",
       "sfxAtSec": 0.1,
@@ -281,7 +351,21 @@
       ],
       "kicker": "Giới hạn",
       "visual": {
-        "kind": "limits"
+        "kind": "limits",
+        "data": {
+          "rows": [
+            {
+              "label": "Suy luận phức tạp",
+              "value": 0.28
+            },
+            {
+              "label": "Context dài",
+              "value": 0.2
+            }
+          ],
+          "badge": "MÁY",
+          "footer": "PHẦN CÒN LẠI CẦN CLOUD"
+        }
       }
     },
     {
@@ -295,7 +379,20 @@
       ],
       "kicker": "Câu hỏi cuối",
       "visual": {
-        "kind": "question"
+        "kind": "question",
+        "data": {
+          "left": {
+            "title": "MÁY",
+            "sub": "nhanh, riêng tư",
+            "icon": "phone"
+          },
+          "right": {
+            "title": "CLOUD",
+            "sub": "mạnh, context dài",
+            "icon": "cloud"
+          },
+          "mark": "?"
+        }
       }
     },
     {

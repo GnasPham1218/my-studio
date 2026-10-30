@@ -3,15 +3,12 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from . import paths, review
-from .align import build_cards
+from . import captions, config, paths, review, visuals
 from .sfx import ensure_sfx, load_catalog
-
-ROOT = Path(__file__).resolve().parent.parent
-FORMATS_PATH = ROOT / "config" / "formats.json"
 
 for _stream in (sys.stdout, sys.stderr):
     try:
@@ -24,42 +21,24 @@ def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        prog="python -m pipeline.build",
-        description="Ghép script + audio + timing thành props.json cho Remotion.",
+def themed_brand(brand: dict[str, Any], template: dict[str, Any]) -> dict[str, Any]:
+    """Brand sau khi template ghi đè màu/font (template từ video mẫu có palette riêng)."""
+    return config.deep_merge(
+        brand,
+        {"colors": template.get("colors") or {}, "fonts": template.get("fonts") or {}},
     )
-    parser.add_argument("--project-id", required=True)
-    parser.add_argument("--format", choices=["short", "long"])
-    parser.add_argument(
-        "--unapproved",
-        action="store_true",
-        help="Chạy nháp khi script chưa được duyệt (pipeline.review)",
-    )
-    args = parser.parse_args(argv)
 
-    pid = args.project_id
-    fmt = args.format or paths.detect_format(pid)
-    if not fmt:
-        raise SystemExit(
-            f"Không tìm thấy script trong {paths.rel(paths.script_dir(pid))}"
-        )
-    review.require_approved(pid, fmt, bypass=args.unapproved)
-    paths.snapshot(pid)
 
-    script = load_json(paths.script_path(pid, fmt))
-    manifest = load_json(paths.manifest_path(pid, fmt))
-    aligned = load_json(paths.words_path(pid, fmt))
-    brand = paths.load_brand(pid)
-    formats = load_json(FORMATS_PATH)
-    cfg = formats["formats"][fmt]
-
-    entries = manifest["scenes"]
-    timing = {scene["id"]: scene for scene in aligned["scenes"]}
-    sfx_items = load_catalog()
-
+def build_scenes(
+    script: dict[str, Any],
+    entries: dict[str, Any],
+    timing: dict[str, Any],
+    sfx_items: dict[str, Any],
+    rules: captions.CardRules,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], float]:
+    """Ghép script + audio + timing thành scene và card phụ đề."""
     scenes: list[dict[str, Any]] = []
-    cards: list[dict[str, Any]] = []
+    cards: list[captions.Card] = []
     cursor = 0.0
 
     for scene in script["scenes"]:
@@ -99,7 +78,7 @@ def main(argv: list[str] | None = None) -> int:
                 "kicker": scene.get("kicker"),
                 "bullets": scene.get("bullets"),
                 "emphasis": scene.get("emphasis"),
-                "visual": scene.get("visual"),
+                "visual": visuals.resolve(scene.get("visual")),
                 "sfx": sfx_id,
                 "sfxAtSec": sfx_at,
                 "sfxVolume": scene.get("sfxVolume"),
@@ -110,19 +89,51 @@ def main(argv: list[str] | None = None) -> int:
                 "words": words,
             }
         )
-
-        for card in build_cards(words, cfg["caption"]["maxWordsPerCard"]):
-            cards.append(
-                {
-                    "start": card[0]["start"],
-                    "end": card[-1]["end"],
-                    "words": card,
-                }
-            )
-
+        cards.extend(captions.build_cards(words, rules))
         cursor += duration
 
-    total = round(cursor, 3)
+    return scenes, cards, cursor
+
+
+@dataclass
+class Composed:
+    """Kết quả ghép một (project, format, aspect, template); chưa ghi file nào."""
+
+    props: dict[str, Any]
+    cards: list[captions.Card]
+    layout: dict[str, Any]
+    brand: dict[str, Any]
+    template: dict[str, Any]
+
+
+def compose(
+    pid: str,
+    fmt: str,
+    aspect_id: str,
+    template_id: str | None = None,
+) -> Composed:
+    """Ghép props cho Remotion. Thuần: không ghi file, không kiểm duyệt.
+
+    `template_id` ghi đè `style` của project (dùng để thử template khác lên một
+    project có sẵn mà không sửa project.json).
+    """
+    script = load_json(paths.script_path(pid, fmt))
+    manifest = load_json(paths.manifest_path(pid, fmt))
+    aligned = load_json(paths.words_path(pid, fmt))
+    layout = config.layout(aspect_id)
+    template = config.template(template_id or paths.style_id(pid))
+    brand = themed_brand(paths.load_brand(pid), template)
+    rules = captions.CardRules.from_layout(layout)
+
+    sfx_items = load_catalog()
+    scenes, cards, total = build_scenes(
+        script,
+        manifest["scenes"],
+        {scene["id"]: scene for scene in aligned["scenes"]},
+        sfx_items,
+        rules,
+    )
+    total = round(total, 3)
     if abs(aligned["totalSec"] - total) > 0.05:
         raise SystemExit(
             f"Tổng thời lượng lệch: align={aligned['totalSec']}s, build={total}s"
@@ -130,14 +141,11 @@ def main(argv: list[str] | None = None) -> int:
 
     out = paths.out_dir(pid)
     audio_dir = paths.audio_dir(pid, fmt)
-    sfx_dir = audio_dir / "sfx"
-    ensure_sfx(sfx_dir)
-
     props = {
         "format": fmt,
-        "styleId": paths.style_id(pid),
+        "aspect": aspect_id,
         "audioDir": audio_dir.relative_to(out).as_posix(),
-        "sfxDir": sfx_dir.relative_to(out).as_posix(),
+        "sfxDir": (audio_dir / "sfx").relative_to(out).as_posix(),
         "sfxCatalog": {
             sfx_id: {
                 "file": item["file"],
@@ -146,35 +154,106 @@ def main(argv: list[str] | None = None) -> int:
             }
             for sfx_id, item in sfx_items.items()
         },
-        "width": cfg["width"],
-        "height": cfg["height"],
-        "fps": cfg["fps"],
+        "width": layout["width"],
+        "height": layout["height"],
+        "fps": layout["fps"],
         "totalSec": total,
         "projectId": script["meta"]["projectId"],
         "title": script["meta"]["title"],
         "brand": brand,
-        "safeArea": cfg["safeArea"],
+        "template": template,
+        "layout": layout,
         "scenes": scenes,
-        "captions": cards,
+        "captions": captions.cards_to_json(cards),
     }
+    # Chữ trên thumbnail nằm trong project.json (không thuộc script nên sửa
+    # không làm mất phê duyệt). Thiếu thì Remotion dùng title + emphasis của hook.
+    thumbnail = paths.read_project(pid).get("thumbnail")
+    if thumbnail:
+        props["thumbnail"] = thumbnail
+    return Composed(props, cards, layout, brand, template)
 
-    target = paths.props_path(pid, fmt)
+
+def write_caption_files(pid: str, fmt: str, aspect_id: str, built: Composed) -> Path:
+    """SRT/ASS cho người dùng muốn đưa lên nền tảng; chia card theo khung hình."""
+    cards_dir = paths.cards_dir(pid, fmt, aspect_id)
+    cards_dir.mkdir(parents=True, exist_ok=True)
+    uppercase = bool(built.template["caption"]["uppercase"])
+    captions.write_srt(cards_dir / "captions.srt", built.cards, uppercase)
+    captions.write_ass(
+        cards_dir / "captions.ass",
+        built.cards,
+        layout=built.layout,
+        colors=built.brand["colors"],
+        font=built.brand["fonts"]["body"],
+        uppercase=uppercase,
+    )
+    return cards_dir
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        prog="python -m pipeline.build",
+        description="Ghép script + audio + timing thành props.json cho Remotion.",
+    )
+    parser.add_argument("--project-id", required=True)
+    parser.add_argument("--format", choices=config.format_ids())
+    parser.add_argument(
+        "--aspect",
+        choices=config.aspect_ids(),
+        help="Khung hình (mặc định: project.json hoặc mặc định của format)",
+    )
+    parser.add_argument(
+        "--template",
+        help="Ghi đè template của project (id trong config/templates), không sửa project.json",
+    )
+    parser.add_argument(
+        "--unapproved",
+        action="store_true",
+        help="Chạy nháp khi script chưa được duyệt (pipeline.review)",
+    )
+    args = parser.parse_args(argv)
+
+    pid = args.project_id
+    fmt = args.format or paths.detect_format(pid)
+    if not fmt:
+        raise SystemExit(
+            f"Không tìm thấy script trong {paths.rel(paths.script_dir(pid))}"
+        )
+    aspect_id = paths.resolve_aspect(pid, fmt, args.aspect)
+    review.require_approved(pid, fmt, bypass=args.unapproved)
+    paths.snapshot(pid)
+
+    built = compose(pid, fmt, aspect_id, args.template)
+    ensure_sfx(paths.audio_dir(pid, fmt) / "sfx")
+    write_caption_files(pid, fmt, aspect_id, built)
+
+    props = built.props
+    target = paths.props_path(pid, fmt, aspect_id)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(props, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(
-        f"✓ {paths.rel(target)} · {len(scenes)} scene · "
-        f"{total:.1f}s · {len(cards)} caption card"
+        f"✓ {paths.rel(target)} · {fmt}/{aspect_id} · template {built.template['id']} · "
+        f"{len(props['scenes'])} scene · {props['totalSec']:.1f}s · "
+        f"{len(built.cards)} caption card"
     )
     print(
-        f"  render: python -m pipeline.render --project-id {args.project_id} "
-        f"--format {fmt}"
+        f"  render: python -m pipeline.render --project-id {pid} "
+        f"--format {fmt} --aspect {aspect_id}"
+        + (f" --template {args.template}" if args.template else "")
     )
     paths.update_status(
         pid,
-        title=script["meta"]["title"],
+        title=props["title"],
         format=fmt,
-        props={fmt: {"scenes": len(scenes), "totalSec": total}},
+        props={
+            f"{fmt}-{aspect_id}": {
+                "scenes": len(props["scenes"]),
+                "totalSec": props["totalSec"],
+                "template": built.template["id"],
+            }
+        },
     )
     return 0
 

@@ -14,11 +14,17 @@ out/<projectId>/                   # OUTPUT — xoá/render lại được bất
   01-script/                       # bản snapshot để đọc output (không sửa)
     review-short.md                # báo cáo duyệt do pipeline.review sinh
   02-audio/short/  manifest.json  s01.wav …
-  03-captions/short/  words.json  captions.srt  captions.ass
-  04-props/short/  props.json
-  05-video/  short.mp4
+  03-captions/short/  words.json          # không phụ thuộc khung hình
+  03-captions/short/vertical/  captions.srt  captions.ass
+  04-props/short/vertical/  props.json
+  05-video/  short-vertical.mp4             # <format>-<aspect>.mp4
+             short-vertical.thumbnail.jpg   # ảnh bìa (render --thumbnail)
+  06-capcut/short-vertical/  scenes/ audio/ captions.srt draft/   # pipeline.capcut
   99-logs/  brief.txt  repair.txt  stills/
 ```
+
+``format`` (short|long) là độ dài/luật nội dung; ``aspect`` (vertical|horizontal|
+square) là khung hình. Audio và word timing dùng chung cho mọi aspect.
 
 Muốn sửa nội dung thì sửa trong ``projects/``. ``out/01-script`` chỉ là bản
 copy do pipeline tạo ra. Mọi module phải lấy đường dẫn qua file này.
@@ -33,17 +39,20 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from . import config
+
 ROOT = Path(__file__).resolve().parent.parent
 PROJECTS = ROOT / "projects"
 OUT = ROOT / "out"
 
-FORMATS = ("short", "long")
+FORMATS = config.format_ids()
 
 SCRIPT_DIR = "01-script"
 AUDIO_DIR = "02-audio"
 CAPTIONS_DIR = "03-captions"
 PROPS_DIR = "04-props"
 VIDEO_DIR = "05-video"
+CAPCUT_DIR = "06-capcut"
 LOGS_DIR = "99-logs"
 
 PROJECT_CONFIG = "project.json"
@@ -110,7 +119,7 @@ def update_project(project_id: str, **fields: Any) -> dict[str, Any]:
     path = project_config_path(project_id)
     data = _update_json(path, **fields)
     data.setdefault("projectId", project_id)
-    data.setdefault("style", "tech-explainer")
+    data.setdefault("style", config.DEFAULT_TEMPLATE)
     data.setdefault("createdAt", datetime.now().isoformat(timespec="seconds"))
     data["updatedAt"] = datetime.now().isoformat(timespec="seconds")
     path.write_text(
@@ -120,7 +129,15 @@ def update_project(project_id: str, **fields: Any) -> dict[str, Any]:
 
 
 def style_id(project_id: str) -> str:
-    return str(read_project(project_id).get("style") or "tech-explainer")
+    """Id template trong config/templates (khoá ``style`` của project.json)."""
+    return str(read_project(project_id).get("style") or config.DEFAULT_TEMPLATE)
+
+
+def resolve_aspect(project_id: str, fmt: str, requested: str | None = None) -> str:
+    """Khung hình: tham số CLI > ``aspect`` trong project.json > mặc định của format."""
+    chosen = requested or read_project(project_id).get("aspect") or config.default_aspect(fmt)
+    config.aspect(chosen)  # báo lỗi rõ nếu id không tồn tại
+    return str(chosen)
 
 
 def brand_id(project_id: str) -> str:
@@ -228,20 +245,35 @@ def words_path(project_id: str, fmt: str) -> Path:
     return captions_dir(project_id, fmt) / "words.json"
 
 
-def props_path(project_id: str, fmt: str) -> Path:
-    return out_dir(project_id) / PROPS_DIR / fmt / "props.json"
+def cards_dir(project_id: str, fmt: str, aspect: str) -> Path:
+    """SRT/ASS: cách chia card phụ thuộc khung hình nên nằm riêng theo aspect."""
+    return captions_dir(project_id, fmt) / aspect
+
+
+def props_path(project_id: str, fmt: str, aspect: str) -> Path:
+    return out_dir(project_id) / PROPS_DIR / fmt / aspect / "props.json"
 
 
 def video_dir(project_id: str) -> Path:
     return out_dir(project_id) / VIDEO_DIR
 
 
-def video_path(project_id: str, fmt: str) -> Path:
-    return video_dir(project_id) / f"{fmt}.mp4"
+def video_path(project_id: str, fmt: str, aspect: str) -> Path:
+    return video_dir(project_id) / f"{fmt}-{aspect}.mp4"
 
 
-def preview_path(project_id: str, fmt: str, seconds: float) -> Path:
-    return video_dir(project_id) / f"{fmt}.preview-{seconds:g}s.mp4"
+def thumbnail_path(project_id: str, fmt: str, aspect: str) -> Path:
+    """Ảnh bìa cùng khung hình với video: <format>-<aspect>.thumbnail.jpg."""
+    return video_dir(project_id) / f"{fmt}-{aspect}.thumbnail.jpg"
+
+
+def preview_path(project_id: str, fmt: str, aspect: str, seconds: float) -> Path:
+    return video_dir(project_id) / f"{fmt}-{aspect}.preview-{seconds:g}s.mp4"
+
+
+def capcut_dir(project_id: str, fmt: str, aspect: str) -> Path:
+    """Bộ file mở bằng CapCut: clip từng cảnh, audio, phụ đề, draft."""
+    return out_dir(project_id) / CAPCUT_DIR / f"{fmt}-{aspect}"
 
 
 def logs_dir(project_id: str) -> Path:
@@ -254,6 +286,10 @@ def attempts_dir(project_id: str) -> Path:
 
 def stills_dir(project_id: str) -> Path:
     return logs_dir(project_id) / "stills"
+
+
+def still_path(project_id: str, fmt: str, aspect: str, frame: int) -> Path:
+    return stills_dir(project_id) / f"{fmt}-{aspect}-{frame}.png"
 
 
 # ---------------------------------------------------------------- status

@@ -1,8 +1,8 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
-import type { Brand, CaptionCard, SafeArea } from "../lib/types";
-import type { CaptionTheme } from "../styles";
-import { fontDisplay, withAlpha } from "../lib/theme";
+import type { Brand, CaptionCard } from "../lib/types";
+import { fontDisplay, resolveColor, withAlpha } from "../lib/theme";
+import { useLayout, useTemplate } from "../lib/context";
 
 /**
  * Phụ đề một khối cố định:
@@ -12,85 +12,79 @@ import { fontDisplay, withAlpha } from "../lib/theme";
  * - đổi card bằng cắt thẳng tại ranh giới thời gian (không mờ dần rồi trắng),
  *   nên không có nhấp nháy giữa hai card.
  *
- * `theme="paper"` dùng cho style whiteboard: chữ tối trên thẻ giấy, viền marker.
+ * Kích thước và vị trí lấy từ `layout.caption` (theo khung hình); kiểu dáng
+ * (thẻ giấy, viền chữ, màu từ đang đọc, scrim) lấy từ `template.caption`.
  */
 export const Captions: React.FC<{
   cards: CaptionCard[];
   brand: Brand;
-  format: "short" | "long";
-  safeArea: SafeArea;
-  theme?: CaptionTheme;
-}> = ({ cards, brand, format, safeArea, theme = "tech" }) => {
+}> = ({ cards, brand }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const layout = useLayout();
+  const { caption: tpl } = useTemplate();
+  const cap = layout.caption;
   const time = frame / fps;
-  const paper = theme === "paper";
+  const colors = brand.colors;
+  const hasCard = Boolean(tpl.card);
 
-  const scrim = (
-    <div
-      style={{
-        position: "absolute",
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: paper
-          ? format === "short"
-            ? 560
-            : 280
-          : format === "short"
-            ? 620
-            : 300,
-        background: paper
-          ? `linear-gradient(to top, ${withAlpha(
-              brand.colors.bg,
-              0.98,
-            )} 0%, ${withAlpha(brand.colors.bg, 0.86)} 28%, transparent 100%)`
-          : format === "short"
-            ? `linear-gradient(to top, ${withAlpha(
-                brand.colors.bg,
-                0.94,
-              )} 0%, ${withAlpha(brand.colors.bg, 0.72)} 30%, transparent 100%)`
-            : `linear-gradient(to top, ${withAlpha(
-                brand.colors.bg,
-                0.85,
-              )} 0%, transparent 100%)`,
-      }}
-    />
-  );
+  const scrimStops = tpl.scrim
+    .map(([percent, alpha]) => `${withAlpha(colors.bg, alpha)} ${percent}%`)
+    .join(", ");
+  const scrim =
+    tpl.scrim.length > 0 ? (
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: hasCard ? cap.scrimHeightPaper : cap.scrimHeight,
+          background: `linear-gradient(to top, ${scrimStops})`,
+        }}
+      />
+    ) : null;
 
-  let card = cards.find(
-    (item) => time >= item.start && time < item.end,
-  );
+  let card = cards.find((item) => time >= item.start && time < item.end);
 
-  // Whiteboard: giữ card trước trong khoảng lặng ngắn giữa hai câu.
+  // Giữ card trước trong khoảng lặng ngắn giữa hai câu (template.holdGapSec).
   // Không có bước này, khung caption biến mất rồi hiện lại ~0,4-0,7s,
   // nhìn như nhấp nháy dù từng card không hề pop.
-  if (!card && paper) {
+  if (!card && tpl.holdGapSec > 0) {
     for (const candidate of cards) {
       if (candidate.start > time) break;
-      if (candidate.end <= time && time - candidate.end <= 0.85) {
+      if (candidate.end <= time && time - candidate.end <= tpl.holdGapSec) {
         card = candidate;
       }
     }
   }
 
   if (!card) {
-    return (
-      <AbsoluteFill style={{ pointerEvents: "none" }}>
-        {scrim}
-      </AbsoluteFill>
-    );
+    return <AbsoluteFill style={{ pointerEvents: "none" }}>{scrim}</AbsoluteFill>;
   }
 
   const activeIndex = card.words.findIndex(
     (word) => time >= word.start && time < word.end,
   );
 
-  const size = format === "short" ? (paper ? 54 : 52) : paper ? 40 : 42;
-  const bottom = format === "short" ? 300 : safeArea.bottom;
-  // Đủ chỗ cho 3 dòng; can đáy nên card 1 dòng hay 3 dòng đều không nhảy.
-  const boxHeight = format === "short" ? 214 : 160;
-  const maxWidth = format === "short" ? 920 : 1400;
+  const baseSize = hasCard ? cap.fontSizePaper : cap.fontSize;
+  const size =
+    tpl.fontSizeRel != null
+      ? Math.round(tpl.fontSizeRel * Math.min(layout.width, layout.height))
+      : baseSize;
+  const bottom =
+    tpl.bottomRel != null ? Math.round(tpl.bottomRel * layout.height) : cap.bottom;
+  const maxWidth =
+    tpl.maxWidthRel != null ? Math.round(tpl.maxWidthRel * layout.width) : cap.maxWidth;
+
+  const textColor = resolveColor(tpl.textColor ?? "fg", colors);
+  const highlightColor = tpl.highlight.color
+    ? resolveColor(tpl.highlight.color, colors)
+    : textColor;
+  const underline = tpl.highlight.underline
+    ? withAlpha(resolveColor(tpl.highlight.underline, colors), 0.3)
+    : null;
+  const stroke = tpl.stroke && tpl.stroke.px > 0 ? tpl.stroke : null;
 
   const text = (
     <div
@@ -98,28 +92,33 @@ export const Captions: React.FC<{
         maxWidth,
         fontFamily: fontDisplay,
         fontSize: size,
-        fontWeight: paper ? 400 : 600,
+        fontWeight: tpl.fontWeight,
         lineHeight: 1.22,
-        letterSpacing: paper ? 0.2 : -0.2,
+        letterSpacing: tpl.letterSpacing,
         textAlign: "center",
-        color: brand.colors.fg,
-        textShadow: paper
-          ? undefined
-          : `0 2px 10px ${withAlpha(
+        textTransform: tpl.uppercase ? "uppercase" : undefined,
+        color: textColor,
+        // Viền chữ vẽ phía ngoài nét chữ để không làm mỏng chữ.
+        WebkitTextStroke: stroke
+          ? `${stroke.px * 2}px ${resolveColor(stroke.color, colors)}`
+          : undefined,
+        paintOrder: stroke ? "stroke fill" : undefined,
+        textShadow: tpl.textShadow
+          ? `0 2px 10px ${withAlpha("#000000", 0.8)}, 0 12px 36px ${withAlpha(
               "#000000",
-              0.8,
-            )}, 0 12px 36px ${withAlpha("#000000", 0.5)}`,
+              0.5,
+            )}`
+          : undefined,
       }}
     >
       {card.words.map((word, index) => (
         <span
           key={index}
           style={{
-            color:
-              index === activeIndex ? brand.colors.primary : brand.colors.fg,
+            color: index === activeIndex ? highlightColor : textColor,
             boxShadow:
-              paper && index === activeIndex
-                ? `inset 0 -6px 0 ${withAlpha(brand.colors.accent, 0.3)}`
+              underline && index === activeIndex
+                ? `inset 0 -6px 0 ${underline}`
                 : undefined,
           }}
         >
@@ -130,42 +129,44 @@ export const Captions: React.FC<{
     </div>
   );
 
+  const frameStyle = tpl.card
+    ? {
+        width: "100%",
+        height: "100%",
+        boxSizing: "border-box" as const,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "18px 26px",
+        borderRadius: tpl.card.radius ?? 12,
+        border: `2px solid ${withAlpha(
+          resolveColor(tpl.card.border ?? "fg", colors),
+          tpl.card.borderAlpha ?? 0.68,
+        )}`,
+        backgroundColor: withAlpha(
+          resolveColor(tpl.card.background ?? "surface", colors),
+          tpl.card.backgroundAlpha ?? 0.96,
+        ),
+        boxShadow: `6px 6px 0 ${withAlpha(colors.fg, 0.06)}`,
+      }
+    : null;
+
   return (
     <AbsoluteFill style={{ pointerEvents: "none" }}>
       {scrim}
       <div
         style={{
           position: "absolute",
-          left: format === "short" ? 64 : 120,
-          right: format === "short" ? 64 : 120,
+          left: cap.sideMargin,
+          right: cap.sideMargin,
           bottom,
-          height: boxHeight,
+          height: cap.boxHeight,
           display: "flex",
-          alignItems: paper ? "center" : "flex-end",
+          alignItems: hasCard ? "center" : "flex-end",
           justifyContent: "center",
         }}
       >
-        {paper ? (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              boxSizing: "border-box",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "18px 26px",
-              borderRadius: 12,
-              border: `2px solid ${withAlpha(brand.colors.fg, 0.68)}`,
-              backgroundColor: withAlpha(brand.colors.surface, 0.96),
-              boxShadow: `6px 6px 0 ${withAlpha(brand.colors.fg, 0.06)}`,
-            }}
-          >
-            {text}
-          </div>
-        ) : (
-          text
-        )}
+        {frameStyle ? <div style={frameStyle}>{text}</div> : text}
       </div>
     </AbsoluteFill>
   );

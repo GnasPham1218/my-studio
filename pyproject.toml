@@ -1,0 +1,16 @@
+# Chỉ chứa cấu hình công cụ. Dependency runtime nằm ở requirements.txt
+# (torch phải cài theo backend CUDA của máy nên không thể ghim ở đây).
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = ["models", "out", "video", ".remotion"]
+
+[tool.ruff.lint]
+# F = lỗi thật (import thừa, tên chưa định nghĩa), E9 = lỗi cú pháp.
+select = ["F", "E9"]

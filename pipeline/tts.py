@@ -11,7 +11,7 @@ from typing import Any
 import numpy as np
 import soundfile as sf
 
-from . import paths, review
+from . import config, paths, review
 from .progress import Progress
 from .voice import PROVIDERS, get_provider, resolve_spec, voice_config
 
@@ -171,7 +171,7 @@ def main(argv: list[str] | None = None) -> int:
         description="Sinh voiceover cho từng scene bằng engine TTS local (VieNeu / OmniVoice).",
     )
     parser.add_argument("--project-id", help="Bắt buộc, trừ khi dùng --list-voices")
-    parser.add_argument("--format", choices=["short", "long"], help="Mặc định tự dò")
+    parser.add_argument("--format", choices=config.format_ids(), help="Mặc định tự dò")
     parser.add_argument("--provider", choices=PROVIDERS, help="Mặc định lấy từ brand.json")
     parser.add_argument("--voice", help="[vieneu] Tên giọng preset")
     parser.add_argument("--mode", choices=["auto", "design", "clone"], help="[omnivoice] Kiểu giọng")
@@ -202,7 +202,7 @@ def main(argv: list[str] | None = None) -> int:
     provider_name = args.provider or default_voice.get("provider") or "vieneu"
     spec = build_spec(default_voice, provider_name, args)
     provider = get_provider(provider_name)
-    fingerprint = provider.fingerprint(spec)
+    provider.fingerprint(spec)  # kiểm tra spec sớm; cache key tính theo từng đoạn
 
     if provider_name == "omnivoice" and (spec.get("mode") or "auto") == "auto":
         print(
@@ -269,16 +269,16 @@ def main(argv: list[str] | None = None) -> int:
         segments: list[dict[str, Any]] = []
         for segment in scene_segments(scene, script_language):
             language = segment["language"]
-            config = voice_config(brand, language)
+            lang_voice = voice_config(brand, language)
             segment_provider = str(
                 args.provider
                 if language == script_language and args.provider
-                else config.get("provider") or default_voice.get("provider") or "vieneu"
+                else lang_voice.get("provider") or default_voice.get("provider") or "vieneu"
             )
             # CLI --voice/--mode/--ref-* chỉ áp dụng cho ngôn ngữ mặc định;
             # giọng của ngôn ngữ khác phải lấy đúng từ brand.voices.
             segment_spec = build_spec(
-                config,
+                lang_voice,
                 segment_provider,
                 args,
                 apply_voice_overrides=language == script_language,
@@ -340,14 +340,14 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Nạp xong sau {time.perf_counter() - started:.1f}s\n")
 
     # Ước lượng độ dài audio để ETA có ý nghĩa ngay từ scene đầu.
-    # 3.1 từ/giây là tốc độ nói thật đo được (config/formats.json).
+    # Tốc độ nói thật đo được nằm ở config/formats.json (wordsPerSecond).
     estimated = (
         sum(
             len(segment["text"].split())
             for plan in plans
             for segment in plan["segments"]
         )
-        / 3.1
+        / config.words_per_second()
     )
 
     total_audio = 0.0

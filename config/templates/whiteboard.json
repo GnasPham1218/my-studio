@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "whiteboard",
+  "label": "Whiteboard Lesson",
+  "description": "Nền giấy sáng, chữ marker, caption thẻ giấy; dùng visual người que cho bài giảng.",
+  "background": { "kind": "paper" },
+  "caption": {
+    "fontWeight": 400,
+    "letterSpacing": 0.2,
+    "textShadow": false,
+    "highlight": { "color": "primary", "underline": "accent" },
+    "card": {
+      "background": "surface",
+      "backgroundAlpha": 0.96,
+      "border": "fg",
+      "borderAlpha": 0.68,
+      "radius": 12
+    },
+    "scrim": [[0, 0.98], [28, 0.86], [100, 0]],
+    "holdGapSec": 0.85
+  },
+  "chrome": {
+    "sceneIndex": false,
+    "progress": true,
+    "watermark": { "glow": false, "uppercase": false, "letterSpacing": 1.5, "opacity": 0.58 }
+  },
+  "transition": { "kind": "wipe", "sec": 0.45 }
+}

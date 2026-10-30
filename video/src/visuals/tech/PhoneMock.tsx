@@ -9,9 +9,10 @@ export const PhoneMock: React.FC<{
   brand: Brand;
   label: string;
   sub?: string;
+  badge?: string;
   width?: number;
   delay?: number;
-}> = ({ brand, label, sub, width = 292, delay = 5 }) => {
+}> = ({ brand, label, sub, badge = "ON-DEVICE", width = 292, delay = 5 }) => {
   const enter = useEnter(delay);
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -74,7 +75,7 @@ export const PhoneMock: React.FC<{
               color: brand.colors.muted,
             }}
           >
-            ON-DEVICE
+            {badge}
           </div>
           <div
             style={{

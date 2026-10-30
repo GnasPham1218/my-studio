@@ -1,19 +1,16 @@
 import React from "react";
 import type { SceneProps } from "./shared";
 import { Divider, Headline, Kicker, Layout } from "./shared";
-import { fontDisplay, fontMono, withAlpha } from "../lib/theme";
+import { fontMono, withAlpha } from "../lib/theme";
 import { useEnter } from "../lib/motion";
+import { useLayout } from "../lib/context";
 import { Visual, hasVisual } from "../visuals";
 
-export const Outro: React.FC<SceneProps> = ({
-  scene,
-  brand,
-  format,
-  videoTitle,
-}) => {
+export const Outro: React.FC<SceneProps> = ({ scene, brand, videoTitle }) => {
+  const t = useLayout().scenes.outro;
   const pill = useEnter(14);
   return (
-    <Layout format={format} align="center" vertical="center">
+    <Layout align="center" vertical="center">
       <Kicker brand={brand} align="center" delay={0}>
         {scene.kicker ?? brand.channel.handle}
       </Kicker>
@@ -21,9 +18,9 @@ export const Outro: React.FC<SceneProps> = ({
         text={scene.onScreenText ?? videoTitle}
         emphasis={scene.emphasis}
         brand={brand}
-        size={format === "short" ? 68 : 62}
+        size={t.headline}
         align="center"
-        maxWidth={format === "short" ? 880 : 1300}
+        maxWidth={t.maxWidth}
         delay={3}
       />
       <Divider brand={brand} delay={10} align="center" />
@@ -55,7 +52,7 @@ export const Outro: React.FC<SceneProps> = ({
       {hasVisual(scene) ? (
         <div
           style={{
-            width: format === "short" ? 780 : 1000,
+            width: t.visualWidth,
             marginTop: 24,
             flex: 1,
             display: "flex",
@@ -63,7 +60,7 @@ export const Outro: React.FC<SceneProps> = ({
             justifyContent: "center",
           }}
         >
-          <Visual scene={scene} brand={brand} format={format} />
+          <Visual scene={scene} brand={brand} />
         </div>
       ) : null}
     </Layout>
